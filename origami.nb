@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     22408,        606]
-NotebookOptionsPosition[     22046,        589]
-NotebookOutlinePosition[     22390,        604]
-CellTagsIndexPosition[     22347,        601]
+NotebookDataLength[     22818,        616]
+NotebookOptionsPosition[     22455,        599]
+NotebookOutlinePosition[     22799,        614]
+CellTagsIndexPosition[     22756,        611]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -411,22 +411,30 @@ Cell[BoxData[{
    RowBox[{
     RowBox[{
      RowBox[{
-      RowBox[{"plotGraphics", "[", 
-       RowBox[{"ps_", ",", "ls_", ",", 
-        RowBox[{"range_:", "1"}]}], "]"}], "/;", 
-      RowBox[{"And", "@@", 
-       RowBox[{"pointQ", "/@", "ps"}]}]}], "/;", 
-     RowBox[{"And", "@@", 
-      RowBox[{"lineQ", "/@", "ls"}]}]}], ":=", 
-    RowBox[{"Show", "[", 
-     RowBox[{"Join", "[", 
       RowBox[{
-       RowBox[{"Thread", "[", 
-        RowBox[{"plotPoint", "[", 
-         RowBox[{"ps", ",", "range"}], "]"}], "]"}], ",", 
-       RowBox[{"Thread", "[", 
-        RowBox[{"plotLine", "[", 
-         RowBox[{"ls", ",", "range"}], "]"}], "]"}]}], "]"}], "]"}]}], ";"}], 
+       RowBox[{"plotGraphics", "[", 
+        RowBox[{"ps_", ",", "ls_", ",", "lsegs_", ",", 
+         RowBox[{"range_:", "1"}]}], "]"}], "/;", 
+       RowBox[{"And", "@@", 
+        RowBox[{"pointQ", "/@", "ps"}]}]}], "/;", 
+      RowBox[{"And", "@@", 
+       RowBox[{"lineQ", "/@", "ls"}]}]}], "/;", 
+     RowBox[{"And", "@@", 
+      RowBox[{"lineSegmentQ", "/@", "lsegs"}]}]}], ":=", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Show", "[", 
+     RowBox[{
+      RowBox[{"Join", "[", 
+       RowBox[{
+        RowBox[{"Thread", "[", 
+         RowBox[{"plotPoint", "[", 
+          RowBox[{"ps", ",", "range"}], "]"}], "]"}], ",", 
+        RowBox[{"Thread", "[", 
+         RowBox[{"plotLine", "[", 
+          RowBox[{"ls", ",", "range"}], "]"}], "]"}]}], "]"}], ",", 
+      RowBox[{"Thread", "[", 
+       RowBox[{"plotLineSegment", "[", 
+        RowBox[{"lsegs", ",", "range"}], "]"}], "]"}]}], "]"}]}], ";"}], 
   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"EndPackage", "[", "]"}], ";"}]}], "Input",
@@ -474,7 +482,9 @@ Cell[BoxData[{
    3.6422924157767124`*^9, 3.6422924304090943`*^9}, {3.6422928855482073`*^9, 
    3.642292891155173*^9}, {3.6422929833476257`*^9, 3.642293025643654*^9}, {
    3.642293062699957*^9, 3.6422931163360357`*^9}, {3.642293381966919*^9, 
-   3.6422933866522408`*^9}, {3.6422937802756853`*^9, 3.6422937825923457`*^9}}],
+   3.6422933866522408`*^9}, {3.6422937802756853`*^9, 
+   3.6422937825923457`*^9}, {3.6422941927609863`*^9, 
+   3.6422942237891116`*^9}, {3.642294298878415*^9, 3.6422943037668858`*^9}}],
 
 Cell[CellGroupData[{
 
@@ -534,8 +544,8 @@ Cell[BoxData[
 Cell[BoxData[
  TagBox[
   StyleBox[
-   DynamicModuleBox[{OrigamiReference2D`p1$$ = {2.87, -0.8799999999999999}, 
-    OrigamiReference2D`p2$$ = {-0.20999999999999996`, -1.7199999999999998`}, 
+   DynamicModuleBox[{OrigamiReference2D`p1$$ = {0, 0}, 
+    OrigamiReference2D`p2$$ = {-0.8799999999999999, -0.7199999999999998}, 
     Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
     Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
     1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{{
@@ -584,7 +594,7 @@ $CellContext`r2], 5]],
    3.642292942278469*^9, 3.642293028693816*^9, {3.6422931388650293`*^9, 
    3.6422931682255406`*^9}, 3.642293230114477*^9, {3.642293544442264*^9, 
    3.6422935578077583`*^9}, 3.642293591511675*^9, 3.6422937891219625`*^9, 
-   3.6422938521797295`*^9}]
+   3.6422938521797295`*^9, 3.642294139621415*^9}]
 }, Open  ]]
 },
 WindowSize->{1600, 827},
@@ -603,10 +613,10 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 16559, 456, 992, "Input"],
+Cell[558, 20, 16970, 466, 1012, "Input"],
 Cell[CellGroupData[{
-Cell[17142, 480, 2113, 51, 152, "Input"],
-Cell[19258, 533, 2772, 53, 479, "Output"]
+Cell[17553, 490, 2113, 51, 152, "Input"],
+Cell[19669, 543, 2770, 53, 446, "Output"]
 }, Open  ]]
 }
 ]
