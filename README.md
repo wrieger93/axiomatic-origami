@@ -1,4 +1,2 @@
-origami_modeler
+axiomatic-origami
 ===============
-
-Origami paper-folding software

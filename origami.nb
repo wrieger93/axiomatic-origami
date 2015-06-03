@@ -1,0 +1,511 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     18113,        502]
+NotebookOptionsPosition[     17751,        485]
+NotebookOutlinePosition[     18095,        500]
+CellTagsIndexPosition[     18052,        497]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"BeginPackage", "[", "\"\<OrigamiReference2D`\>\"", "]"}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"pointQ", "[", "p_", "]"}], ":=", 
+   RowBox[{"MatchQ", "[", 
+    RowBox[{"p", ",", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"x_", ",", "y_"}], "}"}], "/;", 
+      RowBox[{"Element", "[", 
+       RowBox[{
+        RowBox[{"x", "|", "y"}], ",", "Reals"}], "]"}]}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"lineQ", "[", "l_", "]"}], ":=", 
+   RowBox[{"MatchQ", "[", 
+    RowBox[{"l", ",", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"cos_", ",", "d_"}], "}"}], "/;", 
+       RowBox[{
+        RowBox[{"-", "1"}], "<", "cos", "\[LessEqual]", "1"}]}], "/;", 
+      RowBox[{"Element", "[", 
+       RowBox[{"d", ",", "Reals"}], "]"}]}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"vectorQ", "[", "v_", "]"}], ":=", 
+    RowBox[{"pointQ", "[", "v", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"upar", "[", 
+    RowBox[{"l_", "?", "lineQ"}], "]"}], ":=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"l", "[", 
+      RowBox[{"[", "1", "]"}], "]"}], ",", 
+     RowBox[{"Sqrt", "[", 
+      RowBox[{"1", "-", 
+       RowBox[{
+        RowBox[{"l", "[", 
+         RowBox[{"[", "1", "]"}], "]"}], "^", "2"}]}], "]"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"uperp", "[", 
+     RowBox[{"l_", "?", "lineQ"}], "]"}], ":=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"Sqrt", "[", 
+       RowBox[{"1", "-", 
+        RowBox[{
+         RowBox[{"l", "[", 
+          RowBox[{"[", "1", "]"}], "]"}], "^", "2"}]}], "]"}], ",", 
+      RowBox[{"-", 
+       RowBox[{"l", "[", 
+        RowBox[{"[", "1", "]"}], "]"}]}]}], "}"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"vectorRotate", "[", 
+      RowBox[{
+       RowBox[{"v_", "?", "VectorQ"}], ",", "\[Theta]_"}], "]"}], "/;", 
+     RowBox[{"Element", "[", 
+      RowBox[{"\[Theta]", ",", "Reals"}], "]"}]}], ":=", 
+    RowBox[{
+     RowBox[{"RotationTransform", "[", "\[Theta]", "]"}], "[", "v", "]"}]}], 
+   ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"lineParametricPoint", "[", 
+     RowBox[{
+      RowBox[{"l_", "?", "lineQ"}], ",", 
+      RowBox[{"t_", "/;", 
+       RowBox[{"Element", "[", 
+        RowBox[{"t", ",", "Reals"}], "]"}]}]}], "]"}], ":=", 
+    RowBox[{"With", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"d", "=", 
+        RowBox[{"l", "[", 
+         RowBox[{"[", "2", "]"}], "]"}]}], "}"}], ",", 
+      RowBox[{
+       RowBox[{"d", " ", 
+        RowBox[{"uperp", "[", "l", "]"}]}], "+", 
+       RowBox[{"t", " ", 
+        RowBox[{"upar", "[", "l", "]"}]}]}]}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"vectorNorm", "[", 
+    RowBox[{"v_", "?", "vectorQ"}], "]"}], ":=", 
+   RowBox[{"Sqrt", "[", 
+    RowBox[{"v", ".", "v"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"pointDistance", "[", 
+    RowBox[{
+     RowBox[{"p1_", "?", "vectorQ"}], ",", 
+     RowBox[{"p2_", "?", "vectorQ"}]}], "]"}], ":=", 
+   RowBox[{"vectorNorm", "[", 
+    RowBox[{"p1", "-", "p2"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"pointLineDistance", "[", 
+    RowBox[{
+     RowBox[{"p_", "?", "pointQ"}], ",", 
+     RowBox[{"l_", "?", "lineQ"}]}], "]"}], ":=", 
+   RowBox[{"Abs", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"uperp", "[", "l", "]"}], ".", "p"}], "-", 
+     RowBox[{"l", "[", 
+      RowBox[{"[", "2", "]"}], "]"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"pointLiesOnLine", "[", 
+     RowBox[{
+      RowBox[{"p_", "?", "pointQ"}], ",", 
+      RowBox[{"l_", "?", "lineQ"}]}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"pointLineDistance", "[", 
+      RowBox[{"p", ",", "l"}], "]"}], "\[Equal]", "0"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"pointParameterOnLine", "[", 
+      RowBox[{
+       RowBox[{"p_", "?", "pointQ"}], ",", 
+       RowBox[{"l_", "?", "lineQ"}]}], "]"}], "/;", 
+     RowBox[{"pointLiesOnLine", "[", 
+      RowBox[{"p", ",", "l"}], "]"}]}], ":=", 
+    RowBox[{
+     RowBox[{"upar", "[", "l", "]"}], ".", "p"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"lineThroughPoints", "[", 
+    RowBox[{
+     RowBox[{"p1_", "?", "pointQ"}], ",", 
+     RowBox[{"p2_", "?", "pointQ"}]}], "]"}], ":=", "\[IndentingNewLine]", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"sorted", "=", 
+        RowBox[{"SortBy", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"p1", ",", "p2"}], "}"}], ",", "Last"}], "]"}]}], ",", 
+       "pmax", ",", "pmin", ",", "cos", ",", "d"}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"pmin", "=", 
+       RowBox[{"sorted", "[", 
+        RowBox[{"[", "1", "]"}], "]"}]}], ";", 
+      RowBox[{"pmax", "=", 
+       RowBox[{"sorted", "[", 
+        RowBox[{"[", "2", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"cos", "=", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{"pmax", "-", "pmin"}], ")"}], "/", 
+          RowBox[{"pointDistance", "[", 
+           RowBox[{"pmax", ",", "pmin"}], "]"}]}], ")"}], "[", 
+        RowBox[{"[", "1", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"d", "=", 
+       RowBox[{"pmax", ".", 
+        RowBox[{"uperp", "[", 
+         RowBox[{"{", 
+          RowBox[{"cos", ",", "0"}], "}"}], "]"}]}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{"cos", ",", "d"}], "}"}]}]}], "\[IndentingNewLine]", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"lineIntersection", "[", 
+      RowBox[{
+       RowBox[{"l1_", "?", "lineQ"}], ",", 
+       RowBox[{"l2_", "?", "lineQ"}]}], "]"}], "/;", 
+     RowBox[{
+      RowBox[{"l1", "[", 
+       RowBox[{"[", "1", "]"}], "]"}], "\[NotEqual]", 
+      RowBox[{"l2", "[", 
+       RowBox[{"[", "1", "]"}], "]"}]}]}], ":=", "\[IndentingNewLine]", 
+    RowBox[{"With", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"d1", "=", 
+         RowBox[{"l1", "[", 
+          RowBox[{"[", "2", "]"}], "]"}]}], ",", 
+        RowBox[{"d2", "=", 
+         RowBox[{"l2", "[", 
+          RowBox[{"[", "2", "]"}], "]"}]}]}], "}"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"lineParametricPoint", "[", 
+       RowBox[{"l1", ",", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"d2", "-", 
+           RowBox[{"d1", 
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"uperp", "[", "l1", "]"}], ".", 
+              RowBox[{"uperp", "[", "l2", "]"}]}], ")"}]}]}], ")"}], "/", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"upar", "[", "l1", "]"}], ".", 
+           RowBox[{"uperp", "[", "l2", "]"}]}], ")"}]}]}], "]"}]}], 
+     "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"projectPointOntoLine", "[", 
+    RowBox[{
+     RowBox[{"p_", "?", "pointQ"}], ",", 
+     RowBox[{"l_", "?", "lineQ"}]}], "]"}], ":=", 
+   RowBox[{"p", "-", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"p", ".", 
+        RowBox[{"uperp", "[", "l", "]"}]}], "-", 
+       RowBox[{"l", "[", 
+        RowBox[{"[", "2", "]"}], "]"}]}], ")"}], 
+     RowBox[{"uperp", "[", "l", "]"}]}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"reflectPointAcrossLine", "[", 
+     RowBox[{
+      RowBox[{"p_", "?", "pointQ"}], ",", 
+      RowBox[{"l_", "?", "lineQ"}]}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"2", 
+      RowBox[{"projectPointOntoLine", "[", 
+       RowBox[{"p", ",", "l"}], "]"}]}], "-", "p"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"pointToLine", "[", 
+    RowBox[{"p_", "?", "pointQ"}], "]"}], ":=", 
+   RowBox[{"lineThroughPoints", "[", 
+    RowBox[{"p", ",", 
+     RowBox[{"p", "+", 
+      RowBox[{"vectorRotate", "[", 
+       RowBox[{"p", ",", 
+        RowBox[{"\[Pi]", "/", "2"}]}], "]"}]}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"plotPoint", "[", 
+    RowBox[{
+     RowBox[{"p_", "?", "pointQ"}], ",", 
+     RowBox[{"range_:", "1"}]}], "]"}], ":=", 
+   RowBox[{"Graphics", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"PointSize", "[", "0.02", "]"}], ",", 
+       RowBox[{"Point", "[", "p", "]"}]}], "}"}], ",", 
+     RowBox[{"PlotRange", "\[Rule]", 
+      RowBox[{"range", "*", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"-", "1"}], ",", "1"}], "}"}]}], "}"}]}]}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"plotLine", "[", 
+    RowBox[{
+     RowBox[{"l_", "?", "lineQ"}], ",", 
+     RowBox[{"range_:", "1"}]}], "]"}], ":=", 
+   RowBox[{"ParametricPlot", "[", 
+    RowBox[{
+     RowBox[{"lineParametricPoint", "[", 
+      RowBox[{"l", ",", "t"}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"t", ",", 
+       RowBox[{"-", "10"}], ",", "10"}], "}"}], ",", 
+     RowBox[{"PlotRange", "\[Rule]", 
+      RowBox[{"range", "*", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"-", "1"}], ",", "1"}], "}"}]}], "}"}]}]}], ",", 
+     RowBox[{"PlotStyle", "->", "Thick"}], ",", 
+     RowBox[{"Axes", "\[Rule]", "False"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      RowBox[{"plotGraphics", "[", 
+       RowBox[{"ps_", ",", "ls_", ",", 
+        RowBox[{"range_:", "1"}]}], "]"}], "/;", 
+      RowBox[{"And", "@@", 
+       RowBox[{"pointQ", "/@", "ps"}]}]}], "/;", 
+     RowBox[{"And", "@@", 
+      RowBox[{"lineQ", "/@", "ls"}]}]}], ":=", 
+    RowBox[{"Show", "[", 
+     RowBox[{"Join", "[", 
+      RowBox[{
+       RowBox[{"Thread", "[", 
+        RowBox[{"plotPoint", "[", 
+         RowBox[{"ps", ",", "range"}], "]"}], "]"}], ",", 
+       RowBox[{"Thread", "[", 
+        RowBox[{"plotLine", "[", 
+         RowBox[{"ls", ",", "range"}], "]"}], "]"}]}], "]"}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"EndPackage", "[", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.6422022051161847`*^9, 3.642202207762063*^9}, {
+   3.6422026992149563`*^9, 3.6422027099265623`*^9}, {3.642202771401203*^9, 
+   3.64220278762372*^9}, {3.6422028454047403`*^9, 3.642202893484873*^9}, {
+   3.642202999530176*^9, 3.642203004969038*^9}, {3.642203036986748*^9, 
+   3.6422030985264363`*^9}, {3.6422031425316763`*^9, 
+   3.6422032991318703`*^9}, {3.6422034650646567`*^9, 3.64220351257438*^9}, {
+   3.6422666921532164`*^9, 3.6422667232412863`*^9}, {3.6422668058719473`*^9, 
+   3.6422668060420694`*^9}, {3.6422669523319225`*^9, 3.642267026357475*^9}, {
+   3.642267100794319*^9, 3.642267110196992*^9}, {3.6422672649508753`*^9, 
+   3.642267271863765*^9}, 3.642267334035903*^9, {3.6422673779020443`*^9, 
+   3.642267399215175*^9}, {3.642267509959813*^9, 3.642267512950918*^9}, {
+   3.642268193304914*^9, 3.6422682354798574`*^9}, {3.6422684301820803`*^9, 
+   3.6422684335614796`*^9}, 3.642268603356021*^9, {3.642268658047846*^9, 
+   3.6422686582730074`*^9}, {3.642268715232442*^9, 3.6422687220873103`*^9}, {
+   3.6422688119831295`*^9, 3.6422688989198475`*^9}, {3.642269150791401*^9, 
+   3.642269167719437*^9}, {3.642269204491542*^9, 3.6422692819465294`*^9}, {
+   3.642270551525832*^9, 3.6422705629269257`*^9}, {3.6422705974944487`*^9, 
+   3.6422705981109037`*^9}, {3.6422707982449827`*^9, 
+   3.6422708211612515`*^9}, {3.6422709456466265`*^9, 
+   3.6422710089055157`*^9}, {3.642271191975484*^9, 3.6422712006426535`*^9}, {
+   3.642271712824517*^9, 3.64227173076525*^9}, {3.6422717934057226`*^9, 
+   3.642271826123968*^9}, {3.6422719159007025`*^9, 3.642271964303046*^9}, {
+   3.6422869911331615`*^9, 3.642287061943411*^9}, {3.6422871023120723`*^9, 
+   3.6422871080191236`*^9}, {3.6422871925901623`*^9, 
+   3.6422871952360544`*^9}, {3.642287242398523*^9, 3.642287366419566*^9}, {
+   3.6422874070344186`*^9, 3.642287485392047*^9}, {3.6422875549654264`*^9, 
+   3.642287627401844*^9}, {3.6422876597177863`*^9, 3.6422876611578264`*^9}, {
+   3.6422879019157457`*^9, 3.6422879052571*^9}, {3.6422880460520535`*^9, 
+   3.642288112145973*^9}, {3.6422881430489273`*^9, 3.6422882607074585`*^9}, {
+   3.6422882913852396`*^9, 3.642288345573708*^9}, {3.6422884315447226`*^9, 
+   3.642288438043337*^9}, {3.6422887294756036`*^9, 3.642288732771943*^9}, 
+   3.642288872172908*^9, {3.642288916435348*^9, 3.6422890499010944`*^9}, {
+   3.642289316541374*^9, 3.642289325522768*^9}, {3.642289911069805*^9, 
+   3.6422899637962365`*^9}, {3.642290132953307*^9, 3.6422901531576495`*^9}, {
+   3.6422908323788624`*^9, 3.642290891071515*^9}, {3.642290957243487*^9, 
+   3.642290960252627*^9}, {3.6422910630900064`*^9, 3.6422911129413967`*^9}, {
+   3.642291161442855*^9, 3.642291181880364*^9}, {3.6422912475759754`*^9, 
+   3.642291254193672*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"plotGraphics", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"p", ",", 
+       RowBox[{"reflectPointAcrossLine", "[", 
+        RowBox[{"p", ",", 
+         RowBox[{"pointToLine", "[", "pl", "]"}]}], "]"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"pointToLine", "[", "pl", "]"}], "}"}], ",", "5"}], "]"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"p", ",", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "0"}], "}"}]}], "}"}], ",", "Locator"}], "}"}], ",",
+    "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"pl", ",", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "0"}], "}"}]}], "}"}], ",", "Locator"}], "}"}]}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellChangeTimes->{{3.642289746461584*^9, 3.642289754477275*^9}, 
+   3.6422897930230007`*^9, {3.642289883879484*^9, 3.642289895589797*^9}, {
+   3.6422899676589603`*^9, 3.642289995629836*^9}, {3.6422900564670258`*^9, 
+   3.6422900715037007`*^9}, {3.642290161671695*^9, 3.6422901724273305`*^9}, {
+   3.6422908986108646`*^9, 3.642291018083059*^9}, {3.642291259583518*^9, 
+   3.6422912603350935`*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{OrigamiReference2D`p$$ = {
+    3.120000000000001, -0.8799999999999999}, $CellContext`pl$$ = {
+    0.6799999999999997, -0.019999999999999574`}, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[OrigamiReference2D`p$$], {1, 0}}, Automatic}, {{
+       Hold[$CellContext`pl$$], {1, 0}}, Automatic}}, Typeset`size$$ = {
+    360., {178., 182.}}, Typeset`update$$ = 0, Typeset`initDone$$, 
+    Typeset`skipInitDone$$ = True}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {
+       OrigamiReference2D`p$$ = {1, 0}, $CellContext`pl$$ = {1, 0}}, 
+      "ControllerVariables" :> {}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> 
+      OrigamiReference2D`plotGraphics[{OrigamiReference2D`p$$, 
+         OrigamiReference2D`reflectPointAcrossLine[OrigamiReference2D`p$$, 
+          OrigamiReference2D`pointToLine[$CellContext`pl$$]]}, {
+         OrigamiReference2D`pointToLine[$CellContext`pl$$]}, 5], 
+      "Specifications" :> {{{OrigamiReference2D`p$$, {1, 0}}, Automatic, 
+         ControlType -> Locator}, {{$CellContext`pl$$, {1, 0}}, Automatic, 
+         ControlType -> Locator}}, "Options" :> {}, "DefaultOptions" :> {}],
+     ImageSizeCache->{417., {211., 218.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{
+  3.642289996054137*^9, {3.6422900570143957`*^9, 3.642290072067085*^9}, 
+   3.64229017336001*^9, {3.6422909727846437`*^9, 3.6422910217876825`*^9}, 
+   3.642291260718307*^9}]
+}, Open  ]]
+},
+WindowSize->{1600, 827},
+WindowMargins->{{-8, Automatic}, {Automatic, -8}},
+FrontEndVersion->"10.1 for Microsoft Windows (64-bit) (March 23, 2015)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 13656, 380, 832, "Input"],
+Cell[CellGroupData[{
+Cell[14239, 404, 1254, 32, 112, "Input"],
+Cell[15496, 438, 2239, 44, 479, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
