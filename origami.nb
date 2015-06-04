@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     23816,        639]
-NotebookOptionsPosition[     23454,        622]
-NotebookOutlinePosition[     23798,        637]
-CellTagsIndexPosition[     23755,        634]
+NotebookDataLength[     30572,        791]
+NotebookOptionsPosition[     30209,        774]
+NotebookOutlinePosition[     30553,        789]
+CellTagsIndexPosition[     30510,        786]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -22,7 +22,13 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{
    RowBox[{"BeginPackage", "[", "\"\<OrigamiReference2D`\>\"", "]"}], ";"}], 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"TODO", ":", " ", 
+    RowBox[{
+    "refactor", " ", "definition", " ", "of", " ", "line", " ", "to", " ", 
+     "two", " ", "points", " ", "and", " ", "write", " ", "lineEqualQ", " ", 
+     "function"}]}], " ", "*)"}]}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{"pointQ", "[", "p_", "]"}], ":=", 
@@ -255,25 +261,25 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{
    RowBox[{
+    RowBox[{"lineIntersection", "[", 
+     RowBox[{"l1_", ",", "l2_"}], "]"}], "/;", 
     RowBox[{
-     RowBox[{"lineIntersection", "[", 
-      RowBox[{"l1_", ",", "l2_"}], "]"}], "/;", 
-     RowBox[{
-      RowBox[{"l1", "[", 
-       RowBox[{"[", "1", "]"}], "]"}], "\[NotEqual]", 
-      RowBox[{"l2", "[", 
-       RowBox[{"[", "1", "]"}], "]"}]}]}], ":=", "\[IndentingNewLine]", 
-    RowBox[{"With", "[", 
-     RowBox[{
-      RowBox[{"{", 
-       RowBox[{
-        RowBox[{"d1", "=", 
-         RowBox[{"l1", "[", 
-          RowBox[{"[", "2", "]"}], "]"}]}], ",", 
-        RowBox[{"d2", "=", 
-         RowBox[{"l2", "[", 
-          RowBox[{"[", "2", "]"}], "]"}]}]}], "}"}], ",", 
-      "\[IndentingNewLine]", 
+     RowBox[{"l1", "[", 
+      RowBox[{"[", "1", "]"}], "]"}], "\[NotEqual]", 
+     RowBox[{"l2", "[", 
+      RowBox[{"[", "1", "]"}], "]"}]}]}], ":=", "\[IndentingNewLine]", 
+   RowBox[{"With", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"d1", "=", 
+        RowBox[{"l1", "[", 
+         RowBox[{"[", "2", "]"}], "]"}]}], ",", 
+       RowBox[{"d2", "=", 
+        RowBox[{"l2", "[", 
+         RowBox[{"[", "2", "]"}], "]"}]}]}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"FullSimplify", "[", 
       RowBox[{"lineParametricPoint", "[", 
        RowBox[{"l1", ",", 
         RowBox[{
@@ -287,8 +293,68 @@ Cell[BoxData[{
          RowBox[{"(", 
           RowBox[{
            RowBox[{"upar", "[", "l1", "]"}], ".", 
-           RowBox[{"uperp", "[", "l2", "]"}]}], ")"}]}]}], "]"}]}], 
-     "\[IndentingNewLine]", "]"}]}], ";"}], 
+           RowBox[{"uperp", "[", "l2", "]"}]}], ")"}]}]}], "]"}], "]"}]}], 
+    "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"lineSegmentIntersectQ", "[", 
+    RowBox[{"lseg1_", ",", "lseg2_"}], "]"}], ":=", "\[IndentingNewLine]", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "p", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"lseg1", "[", 
+         RowBox[{"[", 
+          RowBox[{"1", ",", "1"}], "]"}], "]"}], "\[NotEqual]", 
+        RowBox[{"lseg2", "[", 
+         RowBox[{"[", 
+          RowBox[{"1", ",", "1"}], "]"}], "]"}]}], ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"p", "=", 
+         RowBox[{"lineIntersection", "[", 
+          RowBox[{
+           RowBox[{"lseg1", "[", 
+            RowBox[{"[", "1", "]"}], "]"}], ",", 
+           RowBox[{"lseg2", "[", 
+            RowBox[{"[", "1", "]"}], "]"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"pointLiesOnLineSegment", "[", 
+          RowBox[{"p", ",", "lseg1"}], "]"}], "&&", 
+         RowBox[{"pointLiesOnLineSegment", "[", 
+          RowBox[{"p", ",", "lseg2"}], "]"}]}]}], ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"lseg1", "[", 
+           RowBox[{"[", 
+            RowBox[{"1", ",", "2"}], "]"}], "]"}], "\[Equal]", 
+          RowBox[{"lseg2", "[", 
+           RowBox[{"[", 
+            RowBox[{"1", ",", "2"}], "]"}], "]"}]}], ")"}], "&&", 
+        RowBox[{"(", 
+         RowBox[{"Or", "@@", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"pointLiesOnLineSegment", "[", 
+              RowBox[{"#", ",", "lseg2"}], "]"}], "&"}], "/@", 
+            RowBox[{"lineSegmentEndpoints", "[", "lseg1", "]"}]}], ")"}]}], 
+         ")"}]}]}], "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
+    "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"lineSegmentIntersection", "[", 
+     RowBox[{"lseg1_", ",", "lseg2_"}], "]"}], ":=", 
+    RowBox[{"lineIntersection", "[", 
+     RowBox[{
+      RowBox[{"lseg1", "[", 
+       RowBox[{"[", "1", "]"}], "]"}], ",", 
+      RowBox[{"lseg2", "[", 
+       RowBox[{"[", "1", "]"}], "]"}]}], "]"}]}], ";"}], 
   "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
@@ -520,86 +586,166 @@ Cell[BoxData[{
    3.6423759431542063`*^9, 3.642375946829811*^9}, {3.6423760439297447`*^9, 
    3.642376061603312*^9}, {3.6423761041585054`*^9, 3.642376104923046*^9}, {
    3.6423761621266594`*^9, 3.642376169444852*^9}, {3.642377408096511*^9, 
-   3.642377454166343*^9}}],
+   3.642377454166343*^9}, {3.6423774925837584`*^9, 3.6423776348837805`*^9}, {
+   3.642377744483587*^9, 3.642377852602363*^9}, {3.6423781596523256`*^9, 
+   3.642378164384684*^9}, {3.642378215915266*^9, 3.642378219946127*^9}, {
+   3.6423782906053104`*^9, 3.642378299750802*^9}, {3.642378434122175*^9, 
+   3.642378434367349*^9}, {3.6423784992003965`*^9, 3.642378505049549*^9}, {
+   3.6423785500895033`*^9, 3.6423785644476967`*^9}, {3.6423786003041515`*^9, 
+   3.642378626915044*^9}, {3.6423788574897537`*^9, 3.6423788659807644`*^9}, {
+   3.6423790757847075`*^9, 3.642379076912508*^9}, {3.642379223533597*^9, 
+   3.6423792323908854`*^9}, {3.6423793015159874`*^9, 3.64237930515357*^9}, {
+   3.6423795884119744`*^9, 3.6423796152650375`*^9}}],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{"Manipulate", "[", 
+ RowBox[{"Block", "[", 
   RowBox[{
-   RowBox[{"With", "[", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{
-       RowBox[{"l1", "=", 
-        RowBox[{"pointToLine", "[", "p1", "]"}]}], ",", 
-       RowBox[{"l2", "=", 
-        RowBox[{"pointToLine", "[", "p2", "]"}]}]}], "}"}], ",", 
-     "\[IndentingNewLine]", 
-     RowBox[{"plotGraphics", "[", 
-      RowBox[{
-       RowBox[{"{", "}"}], ",", 
-       RowBox[{"{", 
-        RowBox[{"l1", ",", "l2", ",", 
-         RowBox[{"reflectLineAcrossLine", "[", 
-          RowBox[{"l1", ",", "l2"}], "]"}]}], "}"}], ",", 
-       RowBox[{"{", "}"}], ",", "5"}], "]"}]}], "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"$MaxExtraPrecision", "=", "200"}], "}"}], ",", 
    "\[IndentingNewLine]", 
-   RowBox[{"{", 
+   RowBox[{"Manipulate", "[", 
     RowBox[{
-     RowBox[{"{", 
-      RowBox[{"p1", ",", 
+     RowBox[{"With", "[", 
+      RowBox[{
        RowBox[{"{", 
-        RowBox[{"1", ",", "0"}], "}"}]}], "}"}], ",", "Locator"}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
+        RowBox[{
+         RowBox[{"lseg1", "=", 
+          RowBox[{"lineSegmentThroughPoints", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{"Rationalize", "[", 
+               RowBox[{"#", ",", 
+                RowBox[{"10", "^", 
+                 RowBox[{"-", "3"}]}]}], "]"}], "&"}], "/@", "p1"}], ",", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Rationalize", "[", 
+               RowBox[{"#", ",", 
+                RowBox[{"10", "^", 
+                 RowBox[{"-", "3"}]}]}], "]"}], "&"}], "/@", "p2"}]}], 
+           "]"}]}], ",", 
+         RowBox[{"lseg2", "=", 
+          RowBox[{"lineSegmentThroughPoints", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{"Rationalize", "[", 
+               RowBox[{"#", ",", 
+                RowBox[{"10", "^", 
+                 RowBox[{"-", "3"}]}]}], "]"}], "&"}], "/@", "p3"}], ",", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Rationalize", "[", 
+               RowBox[{"#", ",", 
+                RowBox[{"10", "^", 
+                 RowBox[{"-", "3"}]}]}], "]"}], "&"}], "/@", "p4"}]}], 
+           "]"}]}]}], "}"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"plotGraphics", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{"lineSegmentIntersectQ", "[", 
+             RowBox[{"lseg1", ",", "lseg2"}], "]"}], ",", 
+            RowBox[{"lineSegmentIntersection", "[", 
+             RowBox[{"lseg1", ",", "lseg2"}], "]"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"0", ",", "0"}], "}"}]}], "]"}], "}"}], ",", 
+         RowBox[{"{", "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"lseg1", ",", "lseg2"}], "}"}], ",", "5"}], "]"}]}], "]"}], 
+     ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
-      RowBox[{"p2", ",", 
+      RowBox[{
        RowBox[{"{", 
-        RowBox[{"0", ",", "1"}], "}"}]}], "}"}], ",", "Locator"}], "}"}]}], 
-  "\[IndentingNewLine]", "]"}]], "Input",
+        RowBox[{"p1", ",", 
+         RowBox[{"{", 
+          RowBox[{"1", ",", "0"}], "}"}]}], "}"}], ",", "Locator"}], "}"}], 
+     ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"p2", ",", 
+         RowBox[{"{", 
+          RowBox[{"0", ",", "1"}], "}"}]}], "}"}], ",", "Locator"}], "}"}], 
+     ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"p3", ",", 
+         RowBox[{"{", 
+          RowBox[{"2", ",", "0"}], "}"}]}], "}"}], ",", "Locator"}], "}"}], 
+     ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"p4", ",", 
+         RowBox[{"{", 
+          RowBox[{"0", ",", "2"}], "}"}]}], "}"}], ",", "Locator"}], "}"}]}], 
+    "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", "]"}]], "Input",
  CellChangeTimes->{{3.6423754488723*^9, 3.642375515536628*^9}, 
    3.6423755529111595`*^9, {3.6423756908380775`*^9, 3.642375695639486*^9}, 
    3.642375742781953*^9, {3.642375797772992*^9, 3.642375815418536*^9}, {
    3.6423758637458477`*^9, 3.6423758684992185`*^9}, {3.6423759679167976`*^9, 
    3.642376001373535*^9}, {3.6423760789696207`*^9, 3.642376087690813*^9}, 
-   3.6423761800073533`*^9}],
+   3.6423761800073533`*^9, 3.6423776534199405`*^9, {3.6423778941108117`*^9, 
+   3.642378059511231*^9}, {3.6423781001040645`*^9, 3.642378113346465*^9}, {
+   3.6423782424371147`*^9, 3.642378251926831*^9}, {3.64237839630333*^9, 
+   3.6423784161234207`*^9}, {3.642378568479559*^9, 3.6423785761660194`*^9}, {
+   3.6423786370782576`*^9, 3.6423786592560034`*^9}, {3.642378703355314*^9, 
+   3.6423787303554783`*^9}, {3.6423792427712607`*^9, 3.642379258299308*^9}}],
 
 Cell[BoxData[
  TagBox[
   StyleBox[
-   DynamicModuleBox[{
-    OrigamiReference2D`p1$$ = {-0.3200000000000003, -0.2400000000000002}, 
-    OrigamiReference2D`p2$$ = {2.0700000000000003`, 0.17999999999999972`}, 
-    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
-    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
-    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{{
+   DynamicModuleBox[{OrigamiReference2D`p1$$ = {1, 0}, 
+    OrigamiReference2D`p2$$ = {0.6500000000000004, 
+    2.3200000000000003`}, $CellContext`p3$$ = {2, 
+    0}, $CellContext`p4$$ = {-0.71, 1.7199999999999998`}, Typeset`show$$ = 
+    True, Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
        Hold[OrigamiReference2D`p1$$], {1, 0}}, Automatic}, {{
-       Hold[OrigamiReference2D`p2$$], {0, 1}}, Automatic}}, Typeset`size$$ = {
+       Hold[OrigamiReference2D`p2$$], {0, 1}}, Automatic}, {{
+       Hold[$CellContext`p3$$], {2, 0}}, Automatic}, {{
+       Hold[$CellContext`p4$$], {0, 2}}, Automatic}}, Typeset`size$$ = {
     360., {178., 182.}}, Typeset`update$$ = 0, Typeset`initDone$$, 
     Typeset`skipInitDone$$ = True}, 
     DynamicBox[Manipulate`ManipulateBoxes[
      1, StandardForm, 
       "Variables" :> {
-       OrigamiReference2D`p1$$ = {1, 0}, OrigamiReference2D`p2$$ = {0, 1}}, 
-      "ControllerVariables" :> {}, 
+       OrigamiReference2D`p1$$ = {1, 0}, 
+        OrigamiReference2D`p2$$ = {0, 1}, $CellContext`p3$$ = {2, 
+         0}, $CellContext`p4$$ = {0, 2}}, "ControllerVariables" :> {}, 
       "OtherVariables" :> {
        Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
         Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
         Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
          Typeset`skipInitDone$$}, "Body" :> 
-      With[{OrigamiReference2D`l1 = 
-         OrigamiReference2D`pointToLine[OrigamiReference2D`p1$$], 
-         OrigamiReference2D`l2 = 
-         OrigamiReference2D`pointToLine[OrigamiReference2D`p2$$]}, 
-        OrigamiReference2D`plotGraphics[{}, {
-         OrigamiReference2D`l1, OrigamiReference2D`l2, 
-          OrigamiReference2D`reflectLineAcrossLine[
-          OrigamiReference2D`l1, OrigamiReference2D`l2]}, {}, 5]], 
-      "Specifications" :> {{{OrigamiReference2D`p1$$, {1, 0}}, Automatic, 
-         ControlType -> Locator}, {{OrigamiReference2D`p2$$, {0, 1}}, 
-         Automatic, ControlType -> Locator}}, "Options" :> {}, 
-      "DefaultOptions" :> {}],
+      With[{OrigamiReference2D`lseg1 = 
+         OrigamiReference2D`lineSegmentThroughPoints[
+           Map[Rationalize[#, 10^(-3)]& , OrigamiReference2D`p1$$], 
+           Map[Rationalize[#, 10^(-3)]& , OrigamiReference2D`p2$$]], 
+         OrigamiReference2D`lseg2 = 
+         OrigamiReference2D`lineSegmentThroughPoints[
+           Map[Rationalize[#, 10^(-3)]& , $CellContext`p3$$], 
+           Map[Rationalize[#, 10^(-3)]& , $CellContext`p4$$]]}, 
+        OrigamiReference2D`plotGraphics[{
+          If[
+           OrigamiReference2D`lineSegmentIntersectQ[
+           OrigamiReference2D`lseg1, OrigamiReference2D`lseg2], 
+           OrigamiReference2D`lineSegmentIntersection[
+           OrigamiReference2D`lseg1, OrigamiReference2D`lseg2], {0, 
+           0}]}, {}, {OrigamiReference2D`lseg1, OrigamiReference2D`lseg2}, 
+         5]], "Specifications" :> {{{OrigamiReference2D`p1$$, {1, 0}}, 
+         Automatic, ControlType -> Locator}, {{
+         OrigamiReference2D`p2$$, {0, 1}}, Automatic, ControlType -> 
+         Locator}, {{$CellContext`p3$$, {2, 0}}, Automatic, ControlType -> 
+         Locator}, {{$CellContext`p4$$, {0, 2}}, Automatic, ControlType -> 
+         Locator}}, "Options" :> {}, "DefaultOptions" :> {}],
      ImageSizeCache->{417., {211., 218.}},
      SingleEvaluation->True],
     Deinitialization:>None,
@@ -617,7 +763,13 @@ Cell[BoxData[
    3.6423758109343567`*^9, 3.6423758162881575`*^9}, 3.6423758699682665`*^9, {
    3.642375949118457*^9, 3.642375972062727*^9}, 3.642376002301195*^9, {
    3.6423760882211885`*^9, 3.6423761071156025`*^9}, {3.6423761715413446`*^9, 
-   3.6423761805867805`*^9}}]
+   3.6423761805867805`*^9}, 3.6423774704720592`*^9, {3.6423779785067253`*^9, 
+   3.6423780138628235`*^9}, 3.642378059908533*^9, 3.6423781677890997`*^9, {
+   3.6423782242711983`*^9, 3.64237825231711*^9}, 3.6423783034284053`*^9, 
+   3.6423784659687853`*^9, 3.6423785076173716`*^9, 3.6423785769495726`*^9, {
+   3.6423786515145073`*^9, 3.642378659689318*^9}, 3.64237873156734*^9, 
+   3.6423787813456783`*^9, 3.6423788677330103`*^9, 3.64237907919713*^9, 
+   3.6423792590328064`*^9}]
 }, Open  ]]
 },
 WindowSize->{1600, 827},
@@ -636,10 +788,10 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 18735, 502, 1152, "Input"],
+Cell[558, 20, 21943, 577, 1352, "Input"],
 Cell[CellGroupData[{
-Cell[19318, 526, 1454, 39, 92, "Input"],
-Cell[20775, 567, 2663, 52, 446, "Output"]
+Cell[22526, 601, 3766, 97, 152, "Input"],
+Cell[26295, 700, 3898, 71, 446, "Output"]
 }, Open  ]]
 }
 ]
