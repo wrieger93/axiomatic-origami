@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     23814,        646]
-NotebookOptionsPosition[     23340,        625]
-NotebookOutlinePosition[     23684,        640]
-CellTagsIndexPosition[     23641,        637]
+NotebookDataLength[     23816,        639]
+NotebookOptionsPosition[     23454,        622]
+NotebookOutlinePosition[     23798,        637]
+CellTagsIndexPosition[     23755,        634]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -445,7 +445,22 @@ Cell[BoxData[{
         RowBox[{
          RowBox[{"plotLineSegment", "[", 
           RowBox[{"#", ",", "range"}], "]"}], "&"}], "/@", "lsegs"}]}], "]"}],
-      "]"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+      "]"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "all", " ", "the", " ", "axioms", " ", "return", " ", "a", " ", "list", 
+    " ", "of", " ", "lines", " ", "since", " ", "some", " ", "can", " ", 
+    "have", " ", "multiple", " ", "folds"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"axiom1", "[", 
+     RowBox[{"p1_", ",", "p2_"}], "]"}], ":=", 
+    RowBox[{"{", 
+     RowBox[{"lineThroughPoints", "[", 
+      RowBox[{"p1", ",", "p2"}], "]"}], "}"}]}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"EndPackage", "[", "]"}], ";"}]}], "Input",
  CellChangeTimes->{{3.6422022051161847`*^9, 3.642202207762063*^9}, {
@@ -504,7 +519,8 @@ Cell[BoxData[{
    3.6423753727832837`*^9, 3.6423754440989127`*^9}, 3.642375674365383*^9, {
    3.6423759431542063`*^9, 3.642375946829811*^9}, {3.6423760439297447`*^9, 
    3.642376061603312*^9}, {3.6423761041585054`*^9, 3.642376104923046*^9}, {
-   3.6423761621266594`*^9, 3.642376169444852*^9}}],
+   3.6423761621266594`*^9, 3.642376169444852*^9}, {3.642377408096511*^9, 
+   3.642377454166343*^9}}],
 
 Cell[CellGroupData[{
 
@@ -602,25 +618,6 @@ Cell[BoxData[
    3.642375949118457*^9, 3.642375972062727*^9}, 3.642376002301195*^9, {
    3.6423760882211885`*^9, 3.6423761071156025`*^9}, {3.6423761715413446`*^9, 
    3.6423761805867805`*^9}}]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"reflectLineAcrossLine", "[", 
-  RowBox[{
-   RowBox[{"{", 
-    RowBox[{"1", ",", "0"}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"1", "/", 
-      RowBox[{"Sqrt", "[", "2", "]"}]}], ",", "0"}], "}"}]}], "]"}]], "Input",
- CellChangeTimes->{{3.642375525581778*^9, 3.6423755391714087`*^9}}],
-
-Cell[BoxData[
- RowBox[{"{", 
-  RowBox[{"0", ",", "0"}], "}"}]], "Output",
- CellChangeTimes->{3.6423755396227455`*^9}]
 }, Open  ]]
 },
 WindowSize->{1600, 827},
@@ -639,14 +636,10 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 18140, 486, 1092, "Input"],
+Cell[558, 20, 18735, 502, 1152, "Input"],
 Cell[CellGroupData[{
-Cell[18723, 510, 1454, 39, 92, "Input"],
-Cell[20180, 551, 2663, 52, 446, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[22880, 608, 324, 9, 31, "Input"],
-Cell[23207, 619, 117, 3, 31, "Output"]
+Cell[19318, 526, 1454, 39, 92, "Input"],
+Cell[20775, 567, 2663, 52, 446, "Output"]
 }, Open  ]]
 }
 ]
