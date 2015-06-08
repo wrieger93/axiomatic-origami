@@ -14,7 +14,7 @@ class Vector(object):
 
     def __eq__(self, other):
         """Tests for equality."""
-        return self.x == other.x and self.y == other.y
+        return self.x.equals(other.x) and self.y.equals(other.y)
 
     def __neq__(self, other):
         """Tests for inequality. Opposite of __eq__"""
@@ -65,28 +65,66 @@ class Vector(object):
         return Vector(sympy.cos(angle)*self.x - sympy.sin(angle)*self.y,
                 sympy.sin(angle)*self.x + sympy.cos(angle)*self.y)
 
-    def project_onto(self, other):
+    def project_onto_vector(self, other):
         """The vector projected onto the vector other."""
         return self.dot(other)/(other.dot(other)) * other
 
+    def project_onto_line(self, line):
+        """The point projected onto the line."""
+        return (self-line.p).project_onto_vector(line.d) + line.p
+
+    def lies_on_line(self, line):
+        """True if the point lies on the line."""
+        return self == self.project_onto_line(line)
+
+    def line_dist(self, line):
+        """The distance between the point and the line."""
+        return (self - self.project_onto_line(line)).norm()
+
+    def reflect_across(self, line):
+        """The point reflected across the line."""
+        return 2*self.project_onto_line(line) - self
+
+
+class Line(object):
+    """A class representing a two-dimensional line.
+    
+    The line is defined by a point on the line and a vector parallel to the line."""
+
+    def __init__(self, p=None, d=None):
+        """Initializes a line going through p parallel to d."""
+        self.p = p
+        self.d = d
+
+        if p is None:
+            p = Vector(0,0)
+        if d is None:
+            d = Vector(1,0)
+
+    def __repr__(self):
+        """Returns a string representation of the line."""
+        return "({} + t*{})".format(self.p, self.d)
+
+    def __eq__(self, other):
+        """Tests if the two lines are equivalent representations of the same line."""
+        return self.parallel_to(other) and self.p.lies_on_line(other)
+
+    def __neq__(self, other):
+        """Opposite of __eq__."""
+        return !(self == other)
+
+    def parallel_to(self, other):
+        """True if the two lines are parallel."""
+        return self.d.cross(other.d) == 0
+
+    def reflect_across(self, line):
+        """The given line reflected about the other line."""
+        p1 = self.p.reflect_across(line)
+        p2 = (self.p + self.d).reflect_across(line)
+        return Line(p1, p2 - p1)
+    
+class LineSegment(object):
+    pass
+
 if __name__ == "__main__":
-    # check that all the operations work
-
-    a = Vector(sympy.S(1), sympy.S(3))
-    b = Vector(sympy.S(2), sympy.S(5))
-    c = sympy.S(3)
-
-    print("a: {}, b: {}, c: {}".format(a, b, c))
-    print("a+b:", a + b)
-    print("a-b:", a - b)
-    print("a*c:", a * c)
-    print("c*a:", c * a)
-    print("b/c:", b / c)
-    print("a.b:", a.dot(b))
-    print("axb:", a.cross(b))
-    print("bxa:", b.cross(a))
-    print("|a|:", a.norm())
-    print("normalized a:", a.normalize())
-    print("a rotated by pi/2:", a.rotate(sympy.pi/2))
-    print("a projected onto b:", a.project_onto(b))
-    print("b projected onto a:", b.project_onto(a))
+    pass
