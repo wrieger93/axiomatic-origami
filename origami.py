@@ -1,14 +1,16 @@
+import sympy
+
 class Vector(object):
     """A class representing a two-dimensional vector."""
     
     def __init__(self, x=0, y=0):
         """Initializes a point with x and y components."""
-        self.x = x
-        self.y = y
+        self.x = sympy.S(x)
+        self.y = sympy.S(y)
 
     def __repr__(self):
         """Returns a string representation of the vector."""
-        return "({}, {})".format(self.x, self.y)
+        return "<{}, {}>".format(self.x, self.y)
 
     def __eq__(self, other):
         """Tests for equality."""
@@ -50,12 +52,29 @@ class Vector(object):
         """
         return self.x * other.y - self.y * other.x
 
+    def norm(self):
+        """The magnitude of the vector."""
+        return sympy.sqrt(self.x * self.x + self.y * self.y)
+
+    def normalize(self):
+        """The unit vector in the same direction as the given vector."""
+        return self/self.norm()
+
+    def rotate(self, angle):
+        """The vector rotated by angle radians counterclockwise."""
+        return Vector(sympy.cos(angle)*self.x - sympy.sin(angle)*self.y,
+                sympy.sin(angle)*self.x + sympy.cos(angle)*self.y)
+
+    def project_onto(self, other):
+        """The vector projected onto the vector other."""
+        return self.dot(other)/(other.dot(other)) * other
+
 if __name__ == "__main__":
     # check that all the operations work
 
-    a = Vector(1, 3)
-    b = Vector(2, 5)
-    c = 3
+    a = Vector(sympy.S(1), sympy.S(3))
+    b = Vector(sympy.S(2), sympy.S(5))
+    c = sympy.S(3)
 
     print("a: {}, b: {}, c: {}".format(a, b, c))
     print("a+b:", a + b)
@@ -63,3 +82,11 @@ if __name__ == "__main__":
     print("a*c:", a * c)
     print("c*a:", c * a)
     print("b/c:", b / c)
+    print("a.b:", a.dot(b))
+    print("axb:", a.cross(b))
+    print("bxa:", b.cross(a))
+    print("|a|:", a.norm())
+    print("normalized a:", a.normalize())
+    print("a rotated by pi/2:", a.rotate(sympy.pi/2))
+    print("a projected onto b:", a.project_onto(b))
+    print("b projected onto a:", b.project_onto(a))
