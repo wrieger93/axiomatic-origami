@@ -42,6 +42,14 @@ class Vector(object):
             raise ValueError("Cannot divide a vector by 0")
         return self*(1/other)
 
+    def __pos__(self):
+        """Unary positive operator, doesn't change vector."""
+        return self
+
+    def __neg__(self):
+        """Unary negation, equivalent to multiplying by -1."""
+        return -1*self
+
     def dot(self, other):
         """The dot product of two vectors."""
         return self.x * other.x + self.y * other.y
@@ -111,17 +119,29 @@ class Line(object):
 
     def __neq__(self, other):
         """Opposite of __eq__."""
-        return !(self == other)
+        return not (self == other)
 
-    def parallel_to(self, other):
+    def parallel_to(self, line):
         """True if the two lines are parallel."""
-        return self.d.cross(other.d) == 0
+        return self.d.cross(line.d) == 0
 
     def reflect_across(self, line):
         """The given line reflected about the other line."""
         p1 = self.p.reflect_across(line)
         p2 = (self.p + self.d).reflect_across(line)
         return Line(p1, p2 - p1)
+
+    def intersects_line(self, line):
+        """The point where the two lines intersect. If the lines are parallel then
+        None is returned.
+        """
+        if self.parallel_to(line):
+            return None
+
+        A = sympy.Matrix([[self.d.x, -line.d.x],[self.d.y, -line.d.y]])
+        b = sympy.Matrix([line.p.x - self.p.x, line.p.y - self.p.y])
+        ans = A.LUsolve(b)
+        return self.p + ans[0]*self.d
     
 class LineSegment(object):
     pass
