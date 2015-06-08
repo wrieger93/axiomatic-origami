@@ -104,10 +104,10 @@ class Line(object):
         self.p = p
         self.d = d
 
-        if p is None:
-            p = Vector(0,0)
-        if d is None:
-            d = Vector(1,0)
+        if self.p is None:
+            self.p = Vector(0,0)
+        if self.d is None:
+            self.d = Vector(1,0)
 
     def __repr__(self):
         """Returns a string representation of the line."""
@@ -144,7 +144,35 @@ class Line(object):
         return self.p + ans[0]*self.d
     
 class LineSegment(object):
-    pass
+    """A class representing a two-dimensional line segment.
+
+    The line segment is defined by the two endpoints of the segment."""
+
+    def __init__(self, p1=None, p2=None):
+        """Initializes a line segment with the endpoints p1 and p2."""
+        self.p1 = p1
+        self.p2 = p2
+
+        if self.p1 is None:
+            self.p1 = Vector(0,0)
+        if self.p2 is None:
+            self.p2 = Vector(1,0)
+
+    def __repr__(self):
+        """Returns a string representation of the line segment."""
+        return "({} to {})".format(self.p1, self.p2)
+
+    def __eq__(self, other):
+        """Tests the line segments for equality."""
+        return (self.p1 == other.p1 and self.p2 == other.p2) or (self.p1 == other.p2 and self.p2 == other.p1)
+
+    def __neq__(self, other):
+        """Opposite of __eq__."""
+        return not (self == other)
+
+    def line_through(self):
+        """The line passing through the line segment."""
+        return Line(self.p1, self.p2 - self.p1)
 
 if __name__ == "__main__":
     pass
