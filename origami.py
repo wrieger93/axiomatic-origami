@@ -258,5 +258,36 @@ class LineSegment(object):
         else:
             return None
 
+
+class OrigamiPaper(object):
+    """A class representing an arbitrary piece of origami paper.
+
+    Axioms 1-7 can be applied to the paper with appropriate arguments.
+    The class stores a list of points and line segments found. Only one line 
+    can be created per fold but the intersection of that line with every other 
+    fold on the paper is added to the list.
+
+    Possible future additions:
+    * Allowing for an arbitrary paper shape (or maybe only convex)
+    * Storing a history of folds made
+    """
+    
+    def __init__(self):
+        """Initialize the paper. This includes the boundary, the found points,
+        and the found line segments."""
+        self.points = [Vector(0,0), Vector(1,0), Vector(1,1), Vector(1,0)]
+        self.linesegs = []
+        for p in range(len(self.points)):
+            self.linesegs.append(LineSegment(
+                self.points[p],
+                self.points[(p+1)%len(self.points)]))
+        self.boundary = self.linesegs[:]
+
+    def __repr__(self):
+        """Returns a string representation of the paper."""
+        return "boundary: {}\npoints: {}\nlinesegs: {}".format(
+                self.boundary, self.points, self.linesegs)
+
+
 if __name__ == "__main__":
-    pass
+    o = OrigamiPaper()
