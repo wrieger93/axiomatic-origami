@@ -85,6 +85,11 @@ class Vector(object):
         """True if the point lies on the line."""
         return self == self.project_onto_line(line)
 
+    def lies_on_line_segment(self, lineseg):
+        """True if the point ies on the line segment."""
+        param = (p - lineseg.p1).dot(lineseg.p1) / ((lineseg.p2 - lineseg.p1).dot(p1))
+        return self.lies_on_line(lineseg.line_through()) and 0 <= param <= 1
+
     def line_dist(self, line):
         """The distance between the point and the line."""
         return (self - self.project_onto_line(line)).norm()
@@ -133,8 +138,10 @@ class Line(object):
 
     def intersects_line(self, line):
         """The point where the two lines intersect. If the lines are parallel then
-        None is returned.
+        None is returned. If the lines are the same then -1 is returned.
         """
+        if self == line:
+            return -1
         if self.parallel_to(line):
             return None
 
@@ -142,7 +149,24 @@ class Line(object):
         b = sympy.Matrix([line.p.x - self.p.x, line.p.y - self.p.y])
         ans = A.LUsolve(b)
         return self.p + ans[0]*self.d
-    
+
+    def intersects_line_segment(self, lineseg):
+        """The point where the line intersects the line segment. If the line
+        segment lies on the line then -1 is returned. If the two don't intersect
+        then None is returned.
+        """
+        if self == lineseg.line_through():
+            return -1
+        elif self.parallel_to(lineseg.line_through()):
+            return None
+
+        p = self.intersects_line(lineseg.line_through())
+        if p.lies_on_line_segment(lineseg):
+            return p
+        else:
+            return None
+
+
 class LineSegment(object):
     """A class representing a two-dimensional line segment.
 
@@ -173,6 +197,66 @@ class LineSegment(object):
     def line_through(self):
         """The line passing through the line segment."""
         return Line(self.p1, self.p2 - self.p1)
+
+    def intersects_line(self, line):
+        """The point where the line segment intersects the line. Refer to the
+        Line method intersects_line_segment()."""
+        return line.intersects_line_segment(self)
+
+    def intersects_line_segment(self, lineseg):
+        """The point where the two line segments intersect. If they overlap at
+        more than one point then -1 is returned. If they don't intersect then
+        None is returned."""
+
+        # if the line segments are parallel there's annoying cases
+        if self.line_through().parallel_to(lineseg.line_through()):
+            # if they're parallel and not on the same line they don't intersect
+            if self.p1.lies_on_line(lineseg.line_through()):
+                # literal edge cases
+                # line segments are parallel but only endpoints coincide
+                if self.p1 == lineseg.p1:
+                    if (self.p2.lies_on_line_segment(lineseg) or
+                            lineseg.p2.lies_on_line_segment(self)):
+                        return -1
+                    else:
+                        return self.p1
+                elif self.p1 == lineseg.p2:
+                    if (self.p2.lies_on_line_segment(lineseg) or
+                            lineseg.p1.lies_on_line_segment(self)):
+                        return -1
+                    else:
+                        return self.p1
+                elif self.p2 == lineseg.p1:
+                    if (self.p1.lies_on_line_segment(lineseg) or
+                            lineseg.p2.lies_on_line_segment(self)):
+                        return -1
+                    else:
+                        return self.p2
+                elif self.p2 == lineseg.p2:
+                    if (self.p1.lies_on_line_segment(lineseg) or
+                            lineseg.p1.lies_on_line_segment(self)):
+                        return -1
+                    else:
+                        return self.p2
+                else:
+                    # none of the endpoints coincide so either they don't
+                    # intersect or they overlap
+                    if (self.p1.lies_on_line_segment(lineseg) or
+                            self.p2.lies_on_line_segment(lineseg) or
+                            lineseg.p1.lies_on_line_segment(self) or
+                            lineseg.p2.lies_on_line_segment(sekf)):
+                        return -1
+                    else:
+                        return None
+
+            else:
+                return None
+
+        p = self.line_through().intersects_line(lineseg.line_through())
+        if p.lies_on_line_segment(self) and p.lies_on_line_segment(lineseg):
+            return p
+        else:
+            return None
 
 if __name__ == "__main__":
     pass
