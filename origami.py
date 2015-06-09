@@ -14,6 +14,8 @@ class Vector(object):
 
     def __eq__(self, other):
         """Tests for equality."""
+        if type(self) != type(other):
+            return False
         return self.x.equals(other.x) and self.y.equals(other.y)
 
     def __neq__(self, other):
@@ -87,7 +89,7 @@ class Vector(object):
 
     def lies_on_line_segment(self, lineseg):
         """True if the point ies on the line segment."""
-        param = (p - lineseg.p1).dot(lineseg.p1) / ((lineseg.p2 - lineseg.p1).dot(p1))
+        param = (self - lineseg.p1).dot(lineseg.p2 - lineseg.p1) / ((lineseg.p2 - lineseg.p1).dot(lineseg.p2 - lineseg.p1))
         return self.lies_on_line(lineseg.line_through()) and 0 <= param <= 1
 
     def line_dist(self, line):
@@ -120,6 +122,8 @@ class Line(object):
 
     def __eq__(self, other):
         """Tests if the two lines are equivalent representations of the same line."""
+        if type(self) != type(other):
+            return False
         return self.parallel_to(other) and self.p.lies_on_line(other)
 
     def __neq__(self, other):
@@ -188,6 +192,8 @@ class LineSegment(object):
 
     def __eq__(self, other):
         """Tests the line segments for equality."""
+        if type(self) != type(other):
+            return False
         return (self.p1 == other.p1 and self.p2 == other.p2) or (self.p1 == other.p2 and self.p2 == other.p1)
 
     def __neq__(self, other):
@@ -263,7 +269,7 @@ class OrigamiPaper(object):
     """A class representing an arbitrary piece of origami paper.
 
     Axioms 1-7 can be applied to the paper with appropriate arguments.
-    The class stores a list of points and line segments found. Only one line 
+    The class stores a list of points and line segments found. Only one line
     can be created per fold but the intersection of that line with every other 
     fold on the paper is added to the list.
 
@@ -275,7 +281,7 @@ class OrigamiPaper(object):
     def __init__(self):
         """Initialize the paper. This includes the boundary, the found points,
         and the found line segments."""
-        self.points = [Vector(0,0), Vector(1,0), Vector(1,1), Vector(1,0)]
+        self.points = [Vector(0,0), Vector(1,0), Vector(1,1), Vector(0,1)]
         self.linesegs = []
         for p in range(len(self.points)):
             self.linesegs.append(LineSegment(
@@ -288,6 +294,25 @@ class OrigamiPaper(object):
         return "boundary: {}\npoints: {}\nlinesegs: {}".format(
                 self.boundary, self.points, self.linesegs)
 
+    def intersects_boundary(self, line):
+        """Returns a list of points where the given line intersects the
+        boundary. Can be between 0 and 2 points. If the line coincides with
+        one of the edges, -1 is returned."""
+        points = []
+        for seg in self.linesegs:
+            res = seg.intersects_line(line)
+            if res == -1:
+                return -1
+            elif res is None:
+                continue
+            else:
+                if res not in points:
+                    points.append(res)
+
+        return points
+
+    def axiom_1(self, p1, p2):
+        pass
 
 if __name__ == "__main__":
     o = OrigamiPaper()
