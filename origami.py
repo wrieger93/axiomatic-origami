@@ -1,3 +1,4 @@
+import itertools
 import sympy
 
 class Vector(object):
@@ -21,6 +22,10 @@ class Vector(object):
     def __neq__(self, other):
         """Tests for inequality. Opposite of __eq__"""
         return not self.__eq__(other)
+
+    def __hash__(self):
+        """Returns a hash of the vector."""
+        return hash((self.x, self.y))
 
     def __add__(self, other):
         """Adds two vectors."""
@@ -200,6 +205,13 @@ class LineSegment(object):
         """Opposite of __eq__."""
         return not (self == other)
 
+    def __hash__(self):
+        """Returns a hast of the line segment."""
+        if self.p1.x < self.p2.x:
+            return hash((self.p1, self.p2))
+        else:
+            return hash((self.p2, self.p1))
+
     def line_through(self):
         """The line passing through the line segment."""
         return Line(self.p1, self.p2 - self.p1)
@@ -289,6 +301,9 @@ class OrigamiPaper(object):
                 self.points[(p+1)%len(self.points)]))
         self.boundary = self.linesegs[:]
 
+        self.points = set(self.points)
+        self.linesegs = set(self.linesegs)
+
     def __repr__(self):
         """Returns a string representation of the paper."""
         return "boundary: {}\npoints: {}\nlinesegs: {}".format(
@@ -299,7 +314,7 @@ class OrigamiPaper(object):
         boundary. Can be between 0 and 2 points. If the line coincides with
         one of the edges, -1 is returned."""
         points = []
-        for seg in self.linesegs:
+        for seg in self.boundary:
             res = seg.intersects_line(line)
             if res == -1:
                 return -1
@@ -311,8 +326,55 @@ class OrigamiPaper(object):
 
         return points
 
+    def add_all_intersections(self, line):
+        """Adds to self.points all the points where the given line
+        intersects all other line segments. Also adds the line segment if
+        applicable. If the line segment already exists
+        or the line doesn't intersect the boundary in two points -1 is returned."""
+        points = self.intersects_boundary(line)
+        if points == -1 or len(points) < 2:
+            return -1
+        lineseg = LineSegment(points[0], points[1])
+
+        if lineseg in self.linesegs:
+            return -1
+
+        for seg in self.linesegs:
+            res = seg.intersects_line_segment(lineseg)
+            if not (res == -1 or res is None):
+                self.points.add(res)
+
+        self.linesegs.add(lineseg)
+
     def axiom_1(self, p1, p2):
-        pass
+        """Returns the fold line through points p1 and p2. If p1 and p2 are
+        for some reason equal None is returned. """
+        if p1 == p2:
+            return None
+        return Line(p1, p2-p1)
+
+    def axiom_2(self, p1, p2):
+        """Returns the fold line that places p1 onto p2 (or vice versa).
+        If p1 an p2 are for some reason equal None is returned."""
+        if p1 == p2:
+            return None
+        midpoint = (p1 + p2)/sympy.S("2")
+        return Line(midpoint, (p2-p1).rotate(sympy.pi/2))
 
 if __name__ == "__main__":
     o = OrigamiPaper()
+    for trial in range(3):
+        tot = len(o.points)*(len(o.points)-1)/2
+        count = 0
+        combos = itertools.combinations(o.points, 2)
+        for sub in combos:
+            count += 1
+            if count % 10 == 0:
+                print(count, "out of", tot, sep=" ")
+            p1, p2 = sub
+            foldline = o.axiom_1(p1, p2) 
+            if foldline is not None:
+                o.add_all_intersections(foldline)
+            foldline = o.axiom_2(p1, p2) 
+            if foldline is not None:
+                o.add_all_intersections(foldline)
