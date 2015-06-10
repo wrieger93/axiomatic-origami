@@ -361,6 +361,10 @@ class OrigamiPaper(object):
         midpoint = (p1 + p2)/sympy.S("2")
         return Line(midpoint, (p2-p1).rotate(sympy.pi/2))
 
+    def axiom_4(self, p, seg):
+        """Returns the fold line passing through point p perpendicular to l."""
+        return Line(p, (seg.p2-seg.p1).rotate(sympy.pi/2))
+
 if __name__ == "__main__":
     o = OrigamiPaper()
     for trial in range(3):
@@ -378,3 +382,4 @@ if __name__ == "__main__":
             foldline = o.axiom_2(p1, p2) 
             if foldline is not None:
                 o.add_all_intersections(foldline)
+
