@@ -3,7 +3,7 @@ import sympy
 
 class Vector(object):
     """A class representing a two-dimensional vector."""
-    
+
     def __init__(self, x=0, y=0):
         """Initializes a point with x and y components."""
         self.x = sympy.S(x)
@@ -41,7 +41,7 @@ class Vector(object):
 
     def __rmul__(self, other):
         """Multiplies a scalar by a vector."""
-        return self * other 
+        return self * other
 
     def __truediv__(self, other):
         """Divides a vector by a scalar."""
@@ -108,7 +108,7 @@ class Vector(object):
 
 class Line(object):
     """A class representing a two-dimensional line.
-    
+
     The line is defined by a point on the line and a vector parallel to the line."""
 
     def __init__(self, p=None, d=None):
@@ -282,14 +282,14 @@ class OrigamiPaper(object):
 
     Axioms 1-7 can be applied to the paper with appropriate arguments.
     The class stores a list of points and line segments found. Only one line
-    can be created per fold but the intersection of that line with every other 
+    can be created per fold but the intersection of that line with every other
     fold on the paper is added to the list.
 
     Possible future additions:
     * Allowing for an arbitrary paper shape (or maybe only convex)
     * Storing a history of folds made
     """
-    
+
     def __init__(self):
         """Initialize the paper. This includes the boundary, the found points,
         and the found line segments."""
@@ -361,6 +361,11 @@ class OrigamiPaper(object):
         midpoint = (p1 + p2)/sympy.S("2")
         return Line(midpoint, (p2-p1).rotate(sympy.pi/2))
 
+    def axiom_3(self, l1, l2):
+        """Returns a list of fold lines that place l1 onto l2. There can
+        be up to two folds that accomplish this. If l1 and l2 are the same line
+        then -1 is returned."""
+
     def axiom_4(self, p, seg):
         """Returns the fold line passing through point p perpendicular to l."""
         return Line(p, (seg.p2-seg.p1).rotate(sympy.pi/2))
@@ -376,10 +381,10 @@ if __name__ == "__main__":
             if count % 10 == 0:
                 print(count, "out of", tot, sep=" ")
             p1, p2 = sub
-            foldline = o.axiom_1(p1, p2) 
+            foldline = o.axiom_1(p1, p2)
             if foldline is not None:
                 o.add_all_intersections(foldline)
-            foldline = o.axiom_2(p1, p2) 
+            foldline = o.axiom_2(p1, p2)
             if foldline is not None:
                 o.add_all_intersections(foldline)
 
