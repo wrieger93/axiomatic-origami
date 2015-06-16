@@ -470,6 +470,14 @@ class OrigamiPaper(object):
                 print("Applying axiom 2 to points {} and {}".format(p1, p2))
                 o.add_all_intersections(o.axiom_2(p1, p2))
 
+            elif axiom_num == 4:
+                p_num = int(self.get_input(point_choices, "Point?", "Try again."))
+                lseg_num = int(self.get_input(lineseg_choices, "Line segment?", "Try again."))
+                p = points_dict[p_num]
+                lseg = linesegs_dict[lseg_num]
+                print("Applying axiom 4 to point {} and line segment {}".format(p, lseg))
+                o.add_all_intersections(o.axiom_4(p, lseg))
+
             keep_going = self.get_input(["y", "n"], "Continue? (y/n)", "Try again.")
             if keep_going == "n":
                 done = True
