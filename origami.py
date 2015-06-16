@@ -384,12 +384,12 @@ class OrigamiPaper(object):
         if lineseg in self.linesegs:
             return
 
+        self.linesegs.append(lineseg)
+
         for seg in self.linesegs:
             intersection_type, point = seg.intersects_line_segment(lineseg)
-            if intersection_type == IntersectionType.single:
+            if intersection_type == IntersectionType.single and point not in self.points:
                 self.points.append(point)
-
-        self.linesegs.append(lineseg)
 
     def axiom_1(self, p1, p2):
         """Returns the fold line through points p1 and p2. If p1 and p2 are
@@ -415,7 +415,65 @@ class OrigamiPaper(object):
         """Returns the fold line passing through point p perpendicular to l."""
         return Line(p, (seg.p2-seg.p1).rotate(sympy.pi/2))
 
+    def get_input(self, choices_list, prompt_msg, error_msg, print_choices = False):
+        """Prompts the user for input from choices_list."""
+        if print_choices:
+            print("Choices:")
+            for choice in choices_list:
+                print(choice)
+            print()
+        res = None
+        while True:
+            res = input(prompt_msg + " ")
+            if res not in choices_list:
+                print(error_msg)
+            else:
+                break
+        return res
+
+    def fold_interactive(self):
+        """An interactive prompt to test folding.
+
+        Allows for terminal input to try out the different folding axioms.
+        """
+        axiom_choices = [str(i) for i in range(1, 8)]
+        done = False
+        while not done:
+            points_dict = dict(enumerate(self.points))
+            linesegs_dict = dict(enumerate(self.linesegs))
+            point_choices = [str(x) for x in range(len(self.points))]
+            lineseg_choices = [str(x) for x in range(len(self.linesegs))]
+            print("Points:")
+            for i, p in sorted(points_dict.items()):
+                print("{}. {}".format(i, p))
+            print()
+            print("Line segments:")
+            for i, l in sorted(linesegs_dict.items()):
+                print("{}. {}".format(i, l))
+            print()
+
+            axiom_num = int(self.get_input(axiom_choices, "Axiom?", "Try again."))
+
+            if axiom_num == 1:
+                p1_num = int(self.get_input(point_choices, "First point?", "Try again."))
+                p2_num = int(self.get_input(point_choices, "Second point?", "Try again."))
+                p1 = points_dict[p1_num]
+                p2 = points_dict[p2_num]
+                print("Applying axiom 1 to points {} and {}".format(p1, p2))
+                o.add_all_intersections(o.axiom_1(p1, p2))
+
+            elif axiom_num == 2:
+                p1_num = int(self.get_input(point_choices, "First point?", "Try again."))
+                p2_num = int(self.get_input(point_choices, "Second point?", "Try again."))
+                p1 = points_dict[p1_num]
+                p2 = points_dict[p2_num]
+                print("Applying axiom 2 to points {} and {}".format(p1, p2))
+                o.add_all_intersections(o.axiom_2(p1, p2))
+
+            keep_going = self.get_input(["y", "n"], "Continue? (y/n)", "Try again.")
+            if keep_going == "n":
+                done = True
 
 if __name__ == "__main__":
     o = OrigamiPaper()
-    o.add_all_intersections(o.axiom_1(o.points[0], o.points[2]))
+    o.fold_interactive()
