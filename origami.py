@@ -1,5 +1,29 @@
+from enum import Enum
 import itertools
 import sympy
+
+class IntersectionType(Enum):
+    """An enum representing the possible intersections between two lines.
+
+    Two lines (or line segments) in the X-Y plane can either
+    1. intersect at exactly one point
+    2. not intersect at all
+    3. intersect at an infinite number of points
+
+    This enum encapsulates these different possibilities to make dealing
+    with line intersections easier.
+    """
+
+    # this is also used to represent a finite number of intersection
+    # points between a set of lines
+    single = 1
+
+    # no intersection point
+    none = 2
+
+    # lines overlap
+    infinite = 3
+
 
 class Vector(object):
     """A class representing a two-dimensional vector."""
@@ -146,34 +170,36 @@ class Line(object):
         return Line(p1, p2 - p1)
 
     def intersects_line(self, line):
-        """The point where the two lines intersect. If the lines are parallel then
-        None is returned. If the lines are the same then -1 is returned.
+        """The point where the two lines intersect.
+
+        Returns the tuple (type, point), where type is an IntersectionType
+        and point is the point (None if type is none or infinite).
         """
         if self == line:
-            return -1
+            return IntersectionType.infinite, None
         if self.parallel_to(line):
-            return None
+            return IntersectionType.none, None
 
         A = sympy.Matrix([[self.d.x, -line.d.x],[self.d.y, -line.d.y]])
         b = sympy.Matrix([line.p.x - self.p.x, line.p.y - self.p.y])
         ans = A.LUsolve(b)
-        return self.p + ans[0]*self.d
+        return IntersectionType.single, self.p + ans[0]*self.d
 
     def intersects_line_segment(self, lineseg):
-        """The point where the line intersects the line segment. If the line
-        segment lies on the line then -1 is returned. If the two don't intersect
-        then None is returned.
-        """
-        if self == lineseg.line_through():
-            return -1
-        elif self.parallel_to(lineseg.line_through()):
-            return None
+        """The point where the line intersects the line segment.
 
-        p = self.intersects_line(lineseg.line_through())
-        if p.lies_on_line_segment(lineseg):
-            return p
+        Returns the tuple (type, point), where type is an IntersectionType
+        and point is the point (None if type is none or infinite).
+        """
+
+        intersection_type, p = self.intersects_line(lineseg.line_through())
+        if (intersection_type == IntersectionType.infinite or
+                intersection_type == IntersectionType.none):
+            return intersection_type, None
+        elif p.lies_on_line_segment(lineseg):
+            return IntersectionType.single, p
         else:
-            return None
+            return IntersectionType.none, None
 
 
 class LineSegment(object):
@@ -216,15 +242,27 @@ class LineSegment(object):
         """The line passing through the line segment."""
         return Line(self.p1, self.p2 - self.p1)
 
+    def reflect_across(self, line):
+        """The line segment reflected across the line."""
+        return LineSegment(self.p1.reflect_across(line), self.p2.reflect_across(line))
+
     def intersects_line(self, line):
-        """The point where the line segment intersects the line. Refer to the
-        Line method intersects_line_segment()."""
+        """The point where the two lines intersect.
+
+        Just calls the corresponding method of the Line class for line
+        segment intersection.
+
+        Returns the tuple (type, point), where type is an IntersectionType
+        and point is the point (None if type is none or infinite).
+        """
         return line.intersects_line_segment(self)
 
     def intersects_line_segment(self, lineseg):
-        """The point where the two line segments intersect. If they overlap at
-        more than one point then -1 is returned. If they don't intersect then
-        None is returned."""
+        """The point where the two line segments intersect.
+
+        Returns the tuple (type, point), where type is an IntersectionType
+        and point is the point (None if type is none or infinite).
+        """
 
         # if the line segments are parallel there's annoying cases
         if self.line_through().parallel_to(lineseg.line_through()):
@@ -235,27 +273,27 @@ class LineSegment(object):
                 if self.p1 == lineseg.p1:
                     if (self.p2.lies_on_line_segment(lineseg) or
                             lineseg.p2.lies_on_line_segment(self)):
-                        return -1
+                        return IntersectionType.infinite, None
                     else:
-                        return self.p1
+                        return IntersectionType.single, self.p1
                 elif self.p1 == lineseg.p2:
                     if (self.p2.lies_on_line_segment(lineseg) or
                             lineseg.p1.lies_on_line_segment(self)):
-                        return -1
+                        return IntersectionType.infinite, None
                     else:
-                        return self.p1
+                        return IntersectionType.single, self.p1
                 elif self.p2 == lineseg.p1:
                     if (self.p1.lies_on_line_segment(lineseg) or
                             lineseg.p2.lies_on_line_segment(self)):
-                        return -1
+                        return IntersectionType.infinite, None
                     else:
-                        return self.p2
+                        return IntersectionType.single, self.p2
                 elif self.p2 == lineseg.p2:
                     if (self.p1.lies_on_line_segment(lineseg) or
                             lineseg.p1.lies_on_line_segment(self)):
-                        return -1
+                        return IntersectionType.infinite, None
                     else:
-                        return self.p2
+                        return IntersectionType.single, self.p2
                 else:
                     # none of the endpoints coincide so either they don't
                     # intersect or they overlap
@@ -263,18 +301,20 @@ class LineSegment(object):
                             self.p2.lies_on_line_segment(lineseg) or
                             lineseg.p1.lies_on_line_segment(self) or
                             lineseg.p2.lies_on_line_segment(sekf)):
-                        return -1
+                        return IntersectionType.infinite, None
                     else:
-                        return None
+                        return IntersectionType.none, None
 
             else:
-                return None
+                return IntersectionType.none, None
 
-        p = self.line_through().intersects_line(lineseg.line_through())
-        if p.lies_on_line_segment(self) and p.lies_on_line_segment(lineseg):
-            return p
+        intersection_type, p = self.line_through().intersects_line(lineseg.line_through())
+        if intersection_type != IntersectionType.single:
+            return intersection_type, None
+        elif p.lies_on_line_segment(self) and p.lies_on_line_segment(lineseg):
+            return IntersectionType.single, p
         else:
-            return None
+            return IntersectionType.none, None
 
 
 class OrigamiPaper(object):
@@ -301,8 +341,8 @@ class OrigamiPaper(object):
                 self.points[(p+1)%len(self.points)]))
         self.boundary = self.linesegs[:]
 
-        self.points = set(self.points)
-        self.linesegs = set(self.linesegs)
+        self.points = self.points
+        self.linesegs = self.linesegs
 
     def __repr__(self):
         """Returns a string representation of the paper."""
@@ -310,41 +350,46 @@ class OrigamiPaper(object):
                 self.boundary, self.points, self.linesegs)
 
     def intersects_boundary(self, line):
-        """Returns a list of points where the given line intersects the
-        boundary. Can be between 0 and 2 points. If the line coincides with
-        one of the edges, -1 is returned."""
+        """A list of points where the given line intersects the boundary.
+
+        Returns a tuple (intersection_type, points), where points is a list
+        of intersection points. If intersection_type is infinite, the line
+        overlaps one of the boundary lines. If it's none, the line doesn't
+        intersect the boundary. Otherwise, points will be a list of length
+        one or two.
+        """
         points = []
         for seg in self.boundary:
-            res = seg.intersects_line(line)
-            if res == -1:
-                return -1
-            elif res is None:
+            intersection_type, point = seg.intersects_line(line)
+            if intersection_type == IntersectionType.infinite:
+                return IntersectionType.infinite, None
+            elif intersection_type == IntersectionType.none:
                 continue
             else:
-                if res not in points:
-                    points.append(res)
+                if point not in points:
+                    points.append(point)
 
-        return points
+        return IntersectionType.single, points
 
     def add_all_intersections(self, line):
         """Adds to self.points all the points where the given line
         intersects all other line segments. Also adds the line segment if
-        applicable. If the line segment already exists
-        or the line doesn't intersect the boundary in two points -1 is returned."""
-        points = self.intersects_boundary(line)
-        if points == -1 or len(points) < 2:
-            return -1
+        applicable.
+        """
+        intersection_type, points = self.intersects_boundary(line)
+        if intersection_type != IntersectionType.single or len(points) < 2:
+            return
         lineseg = LineSegment(points[0], points[1])
 
         if lineseg in self.linesegs:
-            return -1
+            return
 
         for seg in self.linesegs:
-            res = seg.intersects_line_segment(lineseg)
-            if not (res == -1 or res is None):
-                self.points.add(res)
+            intersection_type, point = seg.intersects_line_segment(lineseg)
+            if intersection_type == IntersectionType.single:
+                self.points.append(point)
 
-        self.linesegs.add(lineseg)
+        self.linesegs.append(lineseg)
 
     def axiom_1(self, p1, p2):
         """Returns the fold line through points p1 and p2. If p1 and p2 are
@@ -370,21 +415,7 @@ class OrigamiPaper(object):
         """Returns the fold line passing through point p perpendicular to l."""
         return Line(p, (seg.p2-seg.p1).rotate(sympy.pi/2))
 
+
 if __name__ == "__main__":
     o = OrigamiPaper()
-    for trial in range(3):
-        tot = len(o.points)*(len(o.points)-1)/2
-        count = 0
-        combos = itertools.combinations(o.points, 2)
-        for sub in combos:
-            count += 1
-            if count % 10 == 0:
-                print(count, "out of", tot, sep=" ")
-            p1, p2 = sub
-            foldline = o.axiom_1(p1, p2)
-            if foldline is not None:
-                o.add_all_intersections(foldline)
-            foldline = o.axiom_2(p1, p2)
-            if foldline is not None:
-                o.add_all_intersections(foldline)
-
+    o.add_all_intersections(o.axiom_1(o.points[0], o.points[2]))
