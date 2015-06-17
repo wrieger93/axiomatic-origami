@@ -1,5 +1,6 @@
 from enum import Enum
 import itertools
+import logging
 import sympy
 
 class IntersectionType(Enum):
@@ -406,82 +407,90 @@ class OrigamiPaper(object):
         midpoint = (p1 + p2)/sympy.S("2")
         return Line(midpoint, (p2-p1).rotate(sympy.pi/2))
 
-    def axiom_3(self, l1, l2):
-        """Returns a list of fold lines that place l1 onto l2. There can
-        be up to two folds that accomplish this. If l1 and l2 are the same line
-        then -1 is returned."""
+    def axiom_3(self, lseg1, lseg2):
+        """Returns a list of fold lines that place lseg1 onto lseg2.
+
+        There can be up to two folds that accomplish this. If lseg1 and
+        lseg2 overlap then None is returned. The function makes sure that
+        the reflected segments overlap (or else you couldn't align the fold).
+        """
+        int_type, p = lseg1.intersects_line_segment(lseg2)
+        if int_type == IntersectionType.infinite:
+            return None
+        elif lseg1.line_through().parallel_to(lseg2.line_through()):
+            fold_line = Line((lseg1.p1 + lseg2.p1)/2, lseg1.line_through().d)
+            int_type, p =  lseg1.reflect_across(fold_line).intersects_line_segment(lseg2)
+            if int_type != IntersectionType.infinite:
+                return None
+            else:
+                return [fold_line]
 
     def axiom_4(self, p, seg):
         """Returns the fold line passing through point p perpendicular to l."""
         return Line(p, (seg.p2-seg.p1).rotate(sympy.pi/2))
 
-    def get_input(self, choices_list, prompt_msg, error_msg, print_choices = False):
-        """Prompts the user for input from choices_list."""
+
+class TerminalFolder(object):
+    """A class to allow interactive manipulation of the OrigamiPaper class."""
+
+    def __init__(self, paper):
+        """Initialize the class with an OrigamiPaper instance."""
+        self.paper = paper
+
+    def get_input(self, choices_dict, prompt_msg, error_msg="Try again.", print_choices=False):
+        """Prompts the user for input from a set of choices.
+
+        choices_dict should have entries of the form (string: obj) since
+        input() returns a string.
+        """
         if print_choices:
             print("Choices:")
-            for choice in choices_list:
-                print(choice)
+            for k, v in sorted(choices_dict.items()):
+                print("{}: {}".format(k, v))
             print()
         res = None
         while True:
             res = input(prompt_msg + " ")
-            if res not in choices_list:
+            if res not in choices_dict:
                 print(error_msg)
             else:
                 break
-        return res
+        print()
+        return choices_dict[res]
 
     def fold_interactive(self):
         """An interactive prompt to test folding.
 
         Allows for terminal input to try out the different folding axioms.
         """
-        axiom_choices = [str(i) for i in range(1, 8)]
+        axioms_dict = dict([(str(i), i) for i in range(1, 8)])
         done = False
         while not done:
-            points_dict = dict(enumerate(self.points))
-            linesegs_dict = dict(enumerate(self.linesegs))
-            point_choices = [str(x) for x in range(len(self.points))]
-            lineseg_choices = [str(x) for x in range(len(self.linesegs))]
-            print("Points:")
-            for i, p in sorted(points_dict.items()):
-                print("{}. {}".format(i, p))
-            print()
-            print("Line segments:")
-            for i, l in sorted(linesegs_dict.items()):
-                print("{}. {}".format(i, l))
-            print()
+            points_dict = dict([(str(i), p) for i, p in enumerate(self.paper.points)])
+            linesegs_dict = dict([(str(i), lseg) for i, lseg in enumerate(self.paper.linesegs)])
 
-            axiom_num = int(self.get_input(axiom_choices, "Axiom?", "Try again."))
+            axiom_num = self.get_input(axioms_dict, "Axiom? [1-7]")
 
             if axiom_num == 1:
-                p1_num = int(self.get_input(point_choices, "First point?", "Try again."))
-                p2_num = int(self.get_input(point_choices, "Second point?", "Try again."))
-                p1 = points_dict[p1_num]
-                p2 = points_dict[p2_num]
-                print("Applying axiom 1 to points {} and {}".format(p1, p2))
-                o.add_all_intersections(o.axiom_1(p1, p2))
+                p1 = self.get_input(points_dict, "First point?", print_choices=True)
+                p2 = self.get_input(points_dict, "Second point?", print_choices=False)
+                self.paper.add_all_intersections(self.paper.axiom_1(p1, p2))
 
             elif axiom_num == 2:
-                p1_num = int(self.get_input(point_choices, "First point?", "Try again."))
-                p2_num = int(self.get_input(point_choices, "Second point?", "Try again."))
-                p1 = points_dict[p1_num]
-                p2 = points_dict[p2_num]
-                print("Applying axiom 2 to points {} and {}".format(p1, p2))
-                o.add_all_intersections(o.axiom_2(p1, p2))
+                p1 = self.get_input(points_dict, "First point?", print_choices=True)
+                p2 = self.get_input(points_dict, "Second point?", print_choices=False)
+                self.paper.add_all_intersections(self.paper.axiom_2(p1, p2))
 
             elif axiom_num == 4:
-                p_num = int(self.get_input(point_choices, "Point?", "Try again."))
-                lseg_num = int(self.get_input(lineseg_choices, "Line segment?", "Try again."))
-                p = points_dict[p_num]
-                lseg = linesegs_dict[lseg_num]
-                print("Applying axiom 4 to point {} and line segment {}".format(p, lseg))
-                o.add_all_intersections(o.axiom_4(p, lseg))
+                p = self.get_input(points_dict, "Point?", print_choices=True)
+                lseg = self.get_input(linesegs_dict, "Line segment?", print_choices=True)
+                self.paper.add_all_intersections(self.paper.axiom_4(p, lseg))
 
-            keep_going = self.get_input(["y", "n"], "Continue? (y/n)", "Try again.")
-            if keep_going == "n":
-                done = True
+            done = not self.get_input({"y": True, "Y": True, "n": False, "N": False}, "Continue? [y/n]")
+
+        print("Goodbye!")
+
 
 if __name__ == "__main__":
-    o = OrigamiPaper()
-    o.fold_interactive()
+    t = TerminalFolder(OrigamiPaper())
+    t.fold_interactive()
