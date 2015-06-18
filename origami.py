@@ -393,37 +393,51 @@ class OrigamiPaper(object):
                 self.points.append(point)
 
     def axiom_1(self, p1, p2):
-        """Returns the fold line through points p1 and p2. If p1 and p2 are
-        for some reason equal None is returned. """
+        """Returns the fold line through points p1 and p2."""
         if p1 == p2:
-            return None
+            raise ValueError("Points are not distinct.")
         return Line(p1, p2-p1)
 
     def axiom_2(self, p1, p2):
-        """Returns the fold line that places p1 onto p2 (or vice versa).
-        If p1 an p2 are for some reason equal None is returned."""
+        """Returns the fold line that places p1 onto p2 (or vice versa)."""
         if p1 == p2:
-            return None
+            raise ValueError("Points are not distinct.")
         midpoint = (p1 + p2)/sympy.S("2")
         return Line(midpoint, (p2-p1).rotate(sympy.pi/2))
 
     def axiom_3(self, lseg1, lseg2):
         """Returns a list of fold lines that place lseg1 onto lseg2.
 
-        There can be up to two folds that accomplish this. If lseg1 and
-        lseg2 overlap then None is returned. The function makes sure that
-        the reflected segments overlap (or else you couldn't align the fold).
+        There can be up to two folds that accomplish this. The function makes
+        sure that the reflected segments overlap (or else you couldn't
+        align the fold).
         """
+        if lseg1 == lseg2:
+            raise ValueError("Line segments are not distinct.")
         int_type, p = lseg1.intersects_line_segment(lseg2)
         if int_type == IntersectionType.infinite:
-            return None
+            return []
         elif lseg1.line_through().parallel_to(lseg2.line_through()):
-            fold_line = Line((lseg1.p1 + lseg2.p1)/2, lseg1.line_through().d)
+            fold_line = Line((lseg1.p1 + lseg2.p1)/sympy.S(2), lseg1.line_through().d)
             int_type, p =  lseg1.reflect_across(fold_line).intersects_line_segment(lseg2)
             if int_type != IntersectionType.infinite:
-                return None
+                return []
             else:
                 return [fold_line]
+        else:
+            _, int_point = lseg1.line_through().intersects_line(lseg2.line_through())
+            u1 = lseg1.line_through().d.normalize()
+            u2 = lseg2.line_through().d.normalize()
+            lst = []
+            fold1 = Line(int_point, u1 + u2)
+            fold2 = Line(int_point, u1 - u2)
+            int_type1, p1 =  lseg1.reflect_across(fold1).intersects_line_segment(lseg2)
+            int_type2, p2 =  lseg1.reflect_across(fold2).intersects_line_segment(lseg2)
+            if int_type1 == IntersectionType.infinite:
+                lst.append(fold1)
+            if int_type2 == IntersectionType.infinite:
+                lst.append(fold2)
+            return lst
 
     def axiom_4(self, p, seg):
         """Returns the fold line passing through point p perpendicular to l."""
@@ -466,6 +480,9 @@ class TerminalFolder(object):
         axioms_dict = dict([(str(i), i) for i in range(1, 8)])
         done = False
         while not done:
+            print(self.paper)
+            print()
+
             points_dict = dict([(str(i), p) for i, p in enumerate(self.paper.points)])
             linesegs_dict = dict([(str(i), lseg) for i, lseg in enumerate(self.paper.linesegs)])
 
@@ -480,6 +497,19 @@ class TerminalFolder(object):
                 p1 = self.get_input(points_dict, "First point?", print_choices=True)
                 p2 = self.get_input(points_dict, "Second point?", print_choices=False)
                 self.paper.add_all_intersections(self.paper.axiom_2(p1, p2))
+
+            elif axiom_num == 3:
+                lseg1 = self.get_input(linesegs_dict, "First line segment?", print_choices=True)
+                lseg2 = self.get_input(linesegs_dict, "Second line segment?", print_choices=False)
+                fold_lst = self.paper.axiom_3(lseg1, lseg2)
+                if len(fold_lst) == 0:
+                    print("No fold found.")
+                elif len(fold_lst) == 1:
+                    self.paper.add_all_intersections(fold_lst[0])
+                else:
+                    folds_dict = dict([(str(i), f) for i, f in enumerate(fold_lst)])
+                    fold = self.get_input(folds_dict, "Which fold?", print_choices=True)
+                    self.paper.add_all_intersections(fold)
 
             elif axiom_num == 4:
                 p = self.get_input(points_dict, "Point?", print_choices=True)
