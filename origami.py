@@ -2,6 +2,7 @@ from enum import Enum
 import itertools
 import logging
 import sympy
+import matplotlib.pyplot as plt
 
 class IntersectionType(Enum):
     """An enum representing the possible intersections between two lines.
@@ -15,7 +16,7 @@ class IntersectionType(Enum):
     with line intersections easier.
     """
 
-    # this is also used to represent a finite number of intersection
+    # this can also be used to represent a finite number of intersection
     # points between a set of lines
     single = 1
 
@@ -30,7 +31,13 @@ class Vector(object):
     """A class representing a two-dimensional vector."""
 
     def __init__(self, x=0, y=0):
-        """Initializes a point with x and y components."""
+        """Initializes a point with x and y components.
+
+        x and y should be either integers or a string representation of
+        a number (e.g. "2/5" or "1/sqrt(2)") to make use of sympy's exact
+        math capabilities.
+        """
+        # use sympy.S to use exact math
         self.x = sympy.S(x)
         self.y = sympy.S(y)
 
@@ -70,7 +77,7 @@ class Vector(object):
 
     def __truediv__(self, other):
         """Divides a vector by a scalar."""
-        if other == 0:
+        if other.equals(0):
             raise ValueError("Cannot divide a vector by 0")
         return self*(1/other)
 
@@ -87,9 +94,7 @@ class Vector(object):
         return self.x * other.x + self.y * other.y
 
     def cross(self, other):
-        """The magnitude of the 3D cross product between
-        two vectors. Useful for testing if vectors are parallel.
-        """
+        """The magnitude of the 3D cross product between two vectors."""
         return self.x * other.y - self.y * other.x
 
     def norm(self):
@@ -117,10 +122,11 @@ class Vector(object):
         """True if the point lies on the line."""
         return self == self.project_onto_line(line)
 
-    def lies_on_line_segment(self, lineseg):
-        """True if the point ies on the line segment."""
-        param = (self - lineseg.p1).dot(lineseg.p2 - lineseg.p1) / ((lineseg.p2 - lineseg.p1).dot(lineseg.p2 - lineseg.p1))
-        return self.lies_on_line(lineseg.line_through()) and 0 <= param <= 1
+    def lies_on_line_segment(self, lseg):
+        """True if the point lies on the line segment."""
+        lseg_dir = lseg.p2 - lseg.p1
+        param = (self - lseg.p1).dot(lseg_dir) / lseg_dir.dot(lseg_dir)
+        return self.lies_on_line(lseg.line_through()) and 0 <= param <= 1
 
     def line_dist(self, line):
         """The distance between the point and the line."""
@@ -151,7 +157,7 @@ class Line(object):
         return "({} + t*{})".format(self.p, self.d)
 
     def __eq__(self, other):
-        """Tests if the two lines are equivalent representations of the same line."""
+        """Tests if the two lines are nondistinct."""
         if type(self) != type(other):
             return False
         return self.parallel_to(other) and self.p.lies_on_line(other)
@@ -193,10 +199,10 @@ class Line(object):
         and point is the point (None if type is none or infinite).
         """
 
-        intersection_type, p = self.intersects_line(lineseg.line_through())
-        if (intersection_type == IntersectionType.infinite or
-                intersection_type == IntersectionType.none):
-            return intersection_type, None
+        int_type, p = self.intersects_line(lineseg.line_through())
+        if (int_type == IntersectionType.infinite or
+                int_type == IntersectionType.none):
+            return int_type, None
         elif p.lies_on_line_segment(lineseg):
             return IntersectionType.single, p
         else:
@@ -226,7 +232,8 @@ class LineSegment(object):
         """Tests the line segments for equality."""
         if type(self) != type(other):
             return False
-        return (self.p1 == other.p1 and self.p2 == other.p2) or (self.p1 == other.p2 and self.p2 == other.p1)
+        return ((self.p1 == other.p1 and self.p2 == other.p2) or
+                (self.p1 == other.p2 and self.p2 == other.p1))
 
     def __neq__(self, other):
         """Opposite of __eq__."""
@@ -248,7 +255,7 @@ class LineSegment(object):
         return LineSegment(self.p1.reflect_across(line), self.p2.reflect_across(line))
 
     def intersects_line(self, line):
-        """The point where the two lines intersect.
+        """The point where the line intersects the line segment.
 
         Just calls the corresponding method of the Line class for line
         segment intersection.
@@ -258,64 +265,67 @@ class LineSegment(object):
         """
         return line.intersects_line_segment(self)
 
-    def intersects_line_segment(self, lineseg):
+    def intersects_line_segment(self, lseg):
         """The point where the two line segments intersect.
 
         Returns the tuple (type, point), where type is an IntersectionType
         and point is the point (None if type is none or infinite).
         """
-
-        # if the line segments are parallel there's annoying cases
-        if self.line_through().parallel_to(lineseg.line_through()):
-            # if they're parallel and not on the same line they don't intersect
-            if self.p1.lies_on_line(lineseg.line_through()):
-                # literal edge cases
+        #  line segments are parallel
+        if self.line_through().parallel_to(lseg.line_through()):
+            # if they're parallel and on the same line there's some edge cases
+            if self.line_through() == lseg.line_through():
                 # line segments are parallel but only endpoints coincide
-                if self.p1 == lineseg.p1:
-                    if (self.p2.lies_on_line_segment(lineseg) or
-                            lineseg.p2.lies_on_line_segment(self)):
+                if self.p1 == lseg.p1:
+                    if (self.p2.lies_on_line_segment(lseg) or
+                            lseg.p2.lies_on_line_segment(self)):
                         return IntersectionType.infinite, None
                     else:
                         return IntersectionType.single, self.p1
-                elif self.p1 == lineseg.p2:
-                    if (self.p2.lies_on_line_segment(lineseg) or
-                            lineseg.p1.lies_on_line_segment(self)):
+                elif self.p1 == lseg.p2:
+                    if (self.p2.lies_on_line_segment(lseg) or
+                            lseg.p1.lies_on_line_segment(self)):
                         return IntersectionType.infinite, None
                     else:
                         return IntersectionType.single, self.p1
-                elif self.p2 == lineseg.p1:
-                    if (self.p1.lies_on_line_segment(lineseg) or
-                            lineseg.p2.lies_on_line_segment(self)):
+                elif self.p2 == lseg.p1:
+                    if (self.p1.lies_on_line_segment(lseg) or
+                            lseg.p2.lies_on_line_segment(self)):
                         return IntersectionType.infinite, None
                     else:
                         return IntersectionType.single, self.p2
-                elif self.p2 == lineseg.p2:
-                    if (self.p1.lies_on_line_segment(lineseg) or
-                            lineseg.p1.lies_on_line_segment(self)):
+                elif self.p2 == lseg.p2:
+                    if (self.p1.lies_on_line_segment(lseg) or
+                            lseg.p1.lies_on_line_segment(self)):
                         return IntersectionType.infinite, None
                     else:
                         return IntersectionType.single, self.p2
                 else:
                     # none of the endpoints coincide so either they don't
                     # intersect or they overlap
-                    if (self.p1.lies_on_line_segment(lineseg) or
-                            self.p2.lies_on_line_segment(lineseg) or
-                            lineseg.p1.lies_on_line_segment(self) or
-                            lineseg.p2.lies_on_line_segment(sekf)):
+                    if (self.p1.lies_on_line_segment(lseg) or
+                            self.p2.lies_on_line_segment(lseg) or
+                            lseg.p1.lies_on_line_segment(self) or
+                            lseg.p2.lies_on_line_segment(sekf)):
                         return IntersectionType.infinite, None
                     else:
                         return IntersectionType.none, None
 
             else:
+                # if the lines are parallel and aren't the same,
+                # they don't intersect
                 return IntersectionType.none, None
 
-        intersection_type, p = self.line_through().intersects_line(lineseg.line_through())
-        if intersection_type != IntersectionType.single:
-            return intersection_type, None
-        elif p.lies_on_line_segment(self) and p.lies_on_line_segment(lineseg):
-            return IntersectionType.single, p
+        # line segments aren't parallel
         else:
-            return IntersectionType.none, None
+            int_type, p = self.line_through().intersects_line(lseg.line_through())
+            # in theory this should always be false, but here for safety
+            if int_type != IntersectionType.single:
+                return int_type, None
+            elif p.lies_on_line_segment(self) and p.lies_on_line_segment(lseg):
+                return IntersectionType.single, p
+            else:
+                return IntersectionType.none, None
 
 
 class OrigamiPaper(object):
