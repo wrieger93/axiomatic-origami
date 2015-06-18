@@ -89,6 +89,10 @@ class Vector(object):
         """Unary negation, equivalent to multiplying by -1."""
         return -1*self
 
+    def simplify(self):
+        """Simplifies the vector's coordinates with sympy."""
+        return Vector(sympy.simplify(self.x), sympy.simplify(self.y))
+
     def dot(self, other):
         """The dot product of two vectors."""
         return self.x * other.x + self.y * other.y
@@ -165,6 +169,10 @@ class Line(object):
     def __neq__(self, other):
         """Opposite of __eq__."""
         return not (self == other)
+
+    def simplify(self):
+        """Simplifies the line using sympy."""
+        return Line(self.p.simplify(), self.d.simplify())
 
     def parallel_to(self, line):
         """True if the two lines are parallel."""
@@ -245,6 +253,10 @@ class LineSegment(object):
             return hash((self.p1, self.p2))
         else:
             return hash((self.p2, self.p1))
+
+    def simplify(self):
+        """Simplifies the line segment using sympy."""
+        return LineSegment(self.p1.simplify(), self.p2.simplify())
 
     def line_through(self):
         """The line passing through the line segment."""
@@ -441,8 +453,8 @@ class OrigamiPaper(object):
             lst = []
             fold1 = Line(int_point, u1 + u2)
             fold2 = Line(int_point, u1 - u2)
-            int_type1, p1 =  lseg1.reflect_across(fold1).intersects_line_segment(lseg2)
-            int_type2, p2 =  lseg1.reflect_across(fold2).intersects_line_segment(lseg2)
+            int_type1, p1 =  lseg1.reflect_across(fold1).simplify().intersects_line_segment(lseg2)
+            int_type2, p2 =  lseg1.reflect_across(fold2).simplify().intersects_line_segment(lseg2)
             if int_type1 == IntersectionType.infinite:
                 lst.append(fold1)
             if int_type2 == IntersectionType.infinite:
