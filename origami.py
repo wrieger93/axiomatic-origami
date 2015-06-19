@@ -4,7 +4,10 @@ import logging
 import sympy
 import matplotlib.pyplot as plt
 
-accuracy = 50
+# the precision of floating-point numbers
+max_digits = 50
+# when testing for equality, only use this many digits
+comp_digits = 25
 
 class IntersectionType(Enum):
     """An enum representing the possible intersections between two lines.
@@ -39,9 +42,9 @@ class Vector(object):
         a number (e.g. "2/5" or "1/sqrt(2)") to make use of sympy's exact
         math capabilities.
         """
-        # use sympy.S to use exact math
-        self.x = sympy.S(x)
-        self.y = sympy.S(y)
+        # use sympy.Float for extended precision decimals
+        self.x = sympy.Float(sympy.S(x).evalf(2*max_digits), max_digits)
+        self.y = sympy.Float(sympy.S(y).evalf(2*max_digits), max_digits)
 
     def __repr__(self):
         """Returns a string representation of the vector."""
@@ -51,12 +54,12 @@ class Vector(object):
         """Tests for equality."""
         if type(self) != type(other):
             return False
-        return (sympy.N(self.x, accuracy) == sympy.N(other.x, accuracy)
-                and sympy.N(self.y, accuracy) == sympy.N(other.y, accuracy))
+        return (self.x.round(comp_digits) == other.x.round(comp_digits)
+                and self.y.round(comp_digits) == other.y.round(comp_digits))
 
     def __neq__(self, other):
         """Tests for inequality. Opposite of __eq__"""
-        return not self.__eq__(other)
+        return not (self == other)
 
     def __hash__(self):
         """Returns a hash of the vector."""
@@ -92,10 +95,6 @@ class Vector(object):
         """Unary negation, equivalent to multiplying by -1."""
         return -1*self
 
-    def simplify(self):
-        """Simplifies the vector's coordinates with sympy."""
-        return Vector(sympy.simplify(self.x), sympy.simplify(self.y))
-
     def dot(self, other):
         """The dot product of two vectors."""
         return self.x * other.x + self.y * other.y
@@ -110,7 +109,7 @@ class Vector(object):
 
     def normalize(self):
         """The unit vector in the same direction as the given vector."""
-        return (self/self.norm()).simplify()
+        return self/self.norm()
 
     def rotate(self, angle):
         """The vector rotated by angle radians counterclockwise."""
@@ -133,7 +132,7 @@ class Vector(object):
         """True if the point lies on the line segment."""
         lseg_dir = lseg.p2 - lseg.p1
         param = (self - lseg.p1).dot(lseg_dir) / lseg_dir.dot(lseg_dir)
-        return self.lies_on_line(lseg.line_through()) and 0 <= param <= 1
+        return self.lies_on_line(lseg.line_through()) and 0 <= param.round(comp_digits) <= 1
 
     def line_dist(self, line):
         """The distance between the point and the line."""
@@ -173,19 +172,15 @@ class Line(object):
         """Opposite of __eq__."""
         return not (self == other)
 
-    def simplify(self):
-        """Simplifies the line using sympy."""
-        return Line(self.p.simplify(), self.d.simplify())
-
     def parallel_to(self, line):
         """True if the two lines are parallel."""
-        return sympy.N(sympy.Abs(self.d.cross(line.d)), accuracy) < sympy.S("10^-{}".format(accuracy))
+        return sympy.Abs(self.d.cross(line.d)).round(comp_digits) == 0
 
     def reflect_across(self, line):
         """The given line reflected about the other line."""
         p1 = self.p.reflect_across(line)
         p2 = (self.p + self.d).reflect_across(line)
-        return Line(p1, p2 - p1).simplify()
+        return Line(p1, p2 - p1)
 
     def intersects_line(self, line):
         """The point where the two lines intersect.
@@ -257,17 +252,13 @@ class LineSegment(object):
         else:
             return hash((self.p2, self.p1))
 
-    def simplify(self):
-        """Simplifies the line segment using sympy."""
-        return LineSegment(self.p1.simplify(), self.p2.simplify())
-
     def line_through(self):
         """The line passing through the line segment."""
         return Line(self.p1, self.p2 - self.p1)
 
     def reflect_across(self, line):
         """The line segment reflected across the line."""
-        return LineSegment(self.p1.reflect_across(line), self.p2.reflect_across(line)).simplify()
+        return LineSegment(self.p1.reflect_across(line), self.p2.reflect_across(line))
 
     def intersects_line(self, line):
         """The point where the line intersects the line segment.
