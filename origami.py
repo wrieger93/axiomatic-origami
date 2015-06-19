@@ -4,6 +4,8 @@ import logging
 import sympy
 import matplotlib.pyplot as plt
 
+accuracy = 50
+
 class IntersectionType(Enum):
     """An enum representing the possible intersections between two lines.
 
@@ -43,13 +45,14 @@ class Vector(object):
 
     def __repr__(self):
         """Returns a string representation of the vector."""
-        return "<{}, {}>".format(self.x, self.y)
+        return "<{}, {}>".format(self.x.round(6), self.y.round(6))
 
     def __eq__(self, other):
         """Tests for equality."""
         if type(self) != type(other):
             return False
-        return self.x.equals(other.x) and self.y.equals(other.y)
+        return (sympy.N(self.x, accuracy) == sympy.N(other.x, accuracy)
+                and sympy.N(self.y, accuracy) == sympy.N(other.y, accuracy))
 
     def __neq__(self, other):
         """Tests for inequality. Opposite of __eq__"""
@@ -107,7 +110,7 @@ class Vector(object):
 
     def normalize(self):
         """The unit vector in the same direction as the given vector."""
-        return self/self.norm()
+        return (self/self.norm()).simplify()
 
     def rotate(self, angle):
         """The vector rotated by angle radians counterclockwise."""
@@ -176,13 +179,13 @@ class Line(object):
 
     def parallel_to(self, line):
         """True if the two lines are parallel."""
-        return self.d.cross(line.d) == 0
+        return sympy.N(sympy.Abs(self.d.cross(line.d)), accuracy) < sympy.S("10^-{}".format(accuracy))
 
     def reflect_across(self, line):
         """The given line reflected about the other line."""
         p1 = self.p.reflect_across(line)
         p2 = (self.p + self.d).reflect_across(line)
-        return Line(p1, p2 - p1)
+        return Line(p1, p2 - p1).simplify()
 
     def intersects_line(self, line):
         """The point where the two lines intersect.
@@ -264,7 +267,7 @@ class LineSegment(object):
 
     def reflect_across(self, line):
         """The line segment reflected across the line."""
-        return LineSegment(self.p1.reflect_across(line), self.p2.reflect_across(line))
+        return LineSegment(self.p1.reflect_across(line), self.p2.reflect_across(line)).simplify()
 
     def intersects_line(self, line):
         """The point where the line intersects the line segment.
@@ -372,6 +375,13 @@ class OrigamiPaper(object):
         return "boundary: {}\npoints: {}\nlinesegs: {}".format(
                 self.boundary, self.points, self.linesegs)
 
+    def draw(self):
+        for lseg in self.boundary:
+            plt.plot([lseg.p1.x, lseg.p2.x], [lseg.p1.y, lseg.p2.y], "k-")
+        for lseg in self.linesegs:
+            plt.plot([lseg.p1.x, lseg.p2.x], [lseg.p1.y, lseg.p2.y], "k-")
+        plt.show()
+
     def intersects_boundary(self, line):
         """A list of points where the given line intersects the boundary.
 
@@ -453,8 +463,8 @@ class OrigamiPaper(object):
             lst = []
             fold1 = Line(int_point, u1 + u2)
             fold2 = Line(int_point, u1 - u2)
-            int_type1, p1 =  lseg1.reflect_across(fold1).simplify().intersects_line_segment(lseg2)
-            int_type2, p2 =  lseg1.reflect_across(fold2).simplify().intersects_line_segment(lseg2)
+            int_type1, p1 =  lseg1.reflect_across(fold1).intersects_line_segment(lseg2)
+            int_type2, p2 =  lseg1.reflect_across(fold2).intersects_line_segment(lseg2)
             if int_type1 == IntersectionType.infinite:
                 lst.append(fold1)
             if int_type2 == IntersectionType.infinite:
@@ -502,8 +512,7 @@ class TerminalFolder(object):
         axioms_dict = dict([(str(i), i) for i in range(1, 8)])
         done = False
         while not done:
-            print(self.paper)
-            print()
+            self.paper.draw()
 
             points_dict = dict([(str(i), p) for i, p in enumerate(self.paper.points)])
             linesegs_dict = dict([(str(i), lseg) for i, lseg in enumerate(self.paper.linesegs)])
@@ -544,5 +553,6 @@ class TerminalFolder(object):
 
 
 if __name__ == "__main__":
-    t = TerminalFolder(OrigamiPaper())
+    o = OrigamiPaper()
+    t = TerminalFolder(o)
     t.fold_interactive()
