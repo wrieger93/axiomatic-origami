@@ -1,6 +1,5 @@
 from enum import Enum
 import itertools
-import logging
 import sympy
 import matplotlib.pyplot as plt
 
@@ -348,8 +347,9 @@ class OrigamiPaper(object):
     """
 
     def __init__(self):
-        """Initialize the paper. This includes the boundary, the found points,
-        and the found line segments."""
+        """Initialize the paper.
+
+        This includes the boundary, the found points, and the found line segments."""
         self.points = [Vector(0,0), Vector(1,0), Vector(1,1), Vector(0,1)]
         self.linesegs = []
         for p in range(len(self.points)):
@@ -367,11 +367,18 @@ class OrigamiPaper(object):
                 self.boundary, self.points, self.linesegs)
 
     def draw(self):
-        for lseg in self.boundary:
-            plt.plot([lseg.p1.x, lseg.p2.x], [lseg.p1.y, lseg.p2.y], "k-")
+        plt.ion()
+        plt.cla()
+        plt.axis([0,1,0,1])
+        # for lseg in self.boundary:
+            # plt.plot([lseg.p1.x, lseg.p2.x], [lseg.p1.y, lseg.p2.y], "k-")
         for lseg in self.linesegs:
             plt.plot([lseg.p1.x, lseg.p2.x], [lseg.p1.y, lseg.p2.y], "k-")
-        plt.show()
+        ax = plt.gca()
+        ax.set_aspect("equal")
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
+        plt.show(block=False)
 
     def intersects_boundary(self, line):
         """A list of points where the given line intersects the boundary.
@@ -468,7 +475,9 @@ class OrigamiPaper(object):
 
 
 class TerminalFolder(object):
-    """A class to allow interactive manipulation of the OrigamiPaper class."""
+    """A class to allow interactive manipulation of the OrigamiPaper class.
+
+    From the name, the manipulation is done via a command prompt."""
 
     def __init__(self, paper):
         """Initialize the class with an OrigamiPaper instance."""
