@@ -412,14 +412,14 @@ class OrigamiPaper(object):
         """Returns the fold line through points p1 and p2."""
         if p1 == p2:
             raise ValueError("Points are not distinct.")
-        return Line(p1, p2-p1)
+        return [Line(p1, p2-p1)]
 
     def axiom_2(self, p1, p2):
         """Returns the fold line that places p1 onto p2 (or vice versa)."""
         if p1 == p2:
             raise ValueError("Points are not distinct.")
         midpoint = (p1 + p2)/sympy.S("2")
-        return Line(midpoint, (p2-p1).rotate(sympy.pi/2))
+        return [Line(midpoint, (p2-p1).rotate(sympy.pi/2))]
 
     def axiom_3(self, lseg1, lseg2):
         """Returns a list of fold lines that place lseg1 onto lseg2.
@@ -457,4 +457,4 @@ class OrigamiPaper(object):
 
     def axiom_4(self, p, seg):
         """Returns the fold line passing through point p perpendicular to l."""
-        return Line(p, (seg.p2-seg.p1).rotate(sympy.pi/2))
+        return [Line(p, (seg.p2-seg.p1).rotate(sympy.pi/2))]
